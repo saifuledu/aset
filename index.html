@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ringkasan Pemeriksaan Harta Modal & Inventori 2026 – Kolej Komuniti</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:     #0D2B55;
+      --navy-mid: #1A3C6E;
+      --blue:     #2563A8;
+      --blue-lt:  #3B82C4;
+      --gold:     #C9962B;
+      --gold-lt:  #F5B942;
+      --green:    #1D8348;
+      --red:      #C0392B;
+      --orange:   #D35400;
+      --purple:   #7D3C98;
+      --grey:     #6B7280;
+      --bg:       #EEF2F7;
+      --surface:  #FFFFFF;
+      --border:   #D1D9E6;
+      --text:     #0D1B2A;
+      --muted:    #4A5568;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, var(--blue) 100%);
+      color: #fff;
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 220px; height: 220px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: 40%;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.03);
+    }
+    .header-inner {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 28px 32px 22px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      position: relative;
+      z-index: 1;
+    }
+    .header-logo {
+      width: 68px; height: 68px;
+      background: rgba(255,255,255,0.12);
+      border: 2px solid rgba(255,255,255,0.25);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .header-logo svg { width: 40px; height: 40px; }
+    .header-text { flex: 1; }
+    .header-sub {
+      font-size: 11px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 4px;
+    }
+    .header-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      line-height: 1.25;
+    }
+    .header-meta {
+      margin-top: 6px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+    }
+    .header-badge {
+      background: var(--gold);
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 10px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .header-badge .yr { font-size: 28px; font-weight: 800; line-height: 1; }
+    .header-badge .lbl { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.85; margin-top: 2px; }
+
+    /* gold strip */
+    .gold-strip {
+      height: 4px;
+      background: linear-gradient(90deg, var(--gold) 0%, var(--gold-lt) 50%, var(--gold) 100%);
+    }
+
+    /* ── MAIN WRAP ── */
+    .main {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 24px 24px 40px;
+    }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-size: 10.5px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--blue);
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── KPI CARDS ── */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 18px 18px 16px;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      border-radius: 12px 12px 0 0;
+    }
+    .kpi-card.c-blue::before  { background: var(--blue); }
+    .kpi-card.c-green::before { background: var(--green); }
+    .kpi-card.c-orange::before{ background: var(--orange); }
+    .kpi-card.c-red::before   { background: var(--red); }
+    .kpi-card.c-gold::before  { background: var(--gold); }
+
+    .kpi-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 12px;
+      font-size: 17px;
+    }
+    .c-blue  .kpi-icon { background: #EBF2FB; }
+    .c-green .kpi-icon { background: #E9F7EF; }
+    .c-orange .kpi-icon{ background: #FEF0E6; }
+    .c-red   .kpi-icon { background: #FDEDEB; }
+    .c-gold  .kpi-icon { background: #FEF9ED; }
+
+    .kpi-value {
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .c-blue  .kpi-value { color: var(--blue); }
+    .c-green .kpi-value { color: var(--green); }
+    .c-orange .kpi-value{ color: var(--orange); }
+    .c-red   .kpi-value { color: var(--red); }
+    .c-gold  .kpi-value { color: var(--gold); }
+
+    .kpi-label {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .kpi-sub {
+      font-size: 10.5px;
+      color: var(--muted);
+    }
+    .kpi-pill {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .c-green .kpi-pill { background: #E9F7EF; color: var(--green); }
+    .c-orange .kpi-pill{ background: #FEF0E6; color: var(--orange); }
+    .c-red .kpi-pill   { background: #FDEDEB; color: var(--red); }
+    .c-gold .kpi-pill  { background: #FEF9ED; color: var(--gold); }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 22px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .progress-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      white-space: nowrap;
+      min-width: 160px;
+    }
+    .progress-bar-outer {
+      flex: 1;
+      height: 14px;
+      background: #E5EAF2;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .progress-bar-inner {
+      height: 100%;
+      border-radius: 20px;
+      background: linear-gradient(90deg, var(--green) 0%, #27AE60 100%);
+      width: 99.73%;
+      position: relative;
+    }
+    .progress-pct {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--green);
+      white-space: nowrap;
+    }
+    .progress-note {
+      font-size: 10.5px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* ── CHARTS ROW ── */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 1.7fr 1fr;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 22px 18px;
+    }
+    .chart-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .chart-sub {
+      font-size: 10.5px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .chart-canvas-wrap {
+      position: relative;
+    }
+
+    /* ── STATUS LEGEND ── */
+    .legend-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      margin-top: 14px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10.5px;
+      color: var(--muted);
+    }
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    /* ── TABLE ── */
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .table-header {
+      padding: 16px 22px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .table-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .table-sub {
+      font-size: 10.5px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .tbl-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    thead tr {
+      background: var(--navy);
+      color: #fff;
+    }
+    thead th {
+      padding: 10px 12px;
+      text-align: left;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    thead th.c { text-align: center; }
+    tbody tr:nth-child(even) { background: #F7FAFD; }
+    tbody tr:hover { background: #EBF3FB; }
+    tbody td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #EDF2F7;
+      vertical-align: middle;
+    }
+    tbody td.c { text-align: center; }
+    .cat-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      background: #EBF2FB;
+      color: var(--blue);
+    }
+    .status-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin-right: 3px;
+    }
+    .num-good { color: var(--green); font-weight: 700; }
+    .num-warn { color: var(--orange); font-weight: 700; }
+    .num-bad  { color: var(--red);    font-weight: 700; }
+    .num-info { color: var(--blue);   font-weight: 700; }
+
+    tfoot tr { background: var(--navy-mid); color: #fff; }
+    tfoot td {
+      padding: 10px 12px;
+      font-weight: 700;
+      font-size: 12px;
+      border: none;
+    }
+    tfoot td.c { text-align: center; }
+
+    /* ── BOTTOM ROW ── */
+    .bottom-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center;
+      padding: 18px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .footer-legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px 20px;
+      margin-bottom: 10px;
+    }
+    .footer-legend span {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .footer-legend b { color: var(--text); }
+
+    /* ── STAT MINI ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .stat-mini {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 12px 10px;
+      text-align: center;
+    }
+    .stat-mini .sv {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--navy);
+    }
+    .stat-mini .sl {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    @media (max-width: 900px) {
+      .kpi-row { grid-template-columns: repeat(3, 1fr); }
+      .charts-row { grid-template-columns: 1fr; }
+      .bottom-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .kpi-row { grid-template-columns: repeat(2, 1fr); }
+      .header-inner { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-logo">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="22" width="32" height="14" rx="2" fill="rgba(255,255,255,0.25)"/>
+        <rect x="8" y="18" width="24" height="6" rx="1" fill="rgba(255,255,255,0.4)"/>
+        <polygon points="20,4 34,18 6,18" fill="rgba(255,255,255,0.7)"/>
+        <rect x="16" y="27" width="8" height="9" rx="1" fill="rgba(255,255,255,0.5)"/>
+        <rect x="10" y="25" width="5" height="5" rx="1" fill="rgba(255,255,255,0.4)"/>
+        <rect x="25" y="25" width="5" height="5" rx="1" fill="rgba(255,255,255,0.4)"/>
+      </svg>
+    </div>
+    <div class="header-text">
+      <div class="header-sub">Kolej Komuniti &nbsp;|&nbsp; Laporan Aset Rasmi</div>
+      <div class="header-title">Ringkasan Pemeriksaan Harta Modal &amp; Inventori</div>
+      <div class="header-meta">Dijana daripada rekod pemeriksaan rasmi &nbsp;·&nbsp; Semua kategori aset keseluruhan institusi</div>
+    </div>
+    <div class="header-badge">
+      <div class="yr">2026</div>
+      <div class="lbl">Tahun Pemeriksaan</div>
+    </div>
+  </div>
+  <div class="gold-strip"></div>
+</header>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="main">
+
+  <!-- KPI SECTION LABEL -->
+  <div class="section-label">Ringkasan Utama</div>
+
+  <!-- KPI CARDS -->
+  <div class="kpi-row">
+
+    <div class="kpi-card c-blue">
+      <div class="kpi-icon">📦</div>
+      <div class="kpi-value">6,591</div>
+      <div class="kpi-label">Jumlah Keseluruhan Aset</div>
+      <div class="kpi-sub">Harta Modal &amp; Inventori</div>
+    </div>
+
+    <div class="kpi-card c-green">
+      <div class="kpi-icon">✅</div>
+      <div class="kpi-value">6,573</div>
+      <div class="kpi-label">Jumlah Diperiksa</div>
+      <div class="kpi-sub">Telah disahkan &amp; direkodkan</div>
+      <span class="kpi-pill">99.73%</span>
+    </div>
+
+    <div class="kpi-card c-orange">
+      <div class="kpi-icon">⚠️</div>
+      <div class="kpi-value">18</div>
+      <div class="kpi-label">Tidak Diperiksa</div>
+      <div class="kpi-sub">Belum disahkan status</div>
+      <span class="kpi-pill">0.27%</span>
+    </div>
+
+    <div class="kpi-card c-red">
+      <div class="kpi-icon">🔧</div>
+      <div class="kpi-value">19</div>
+      <div class="kpi-label">Aset Rosak</div>
+      <div class="kpi-sub">Status C — perlu perhatian</div>
+      <span class="kpi-pill">0.29%</span>
+    </div>
+
+    <div class="kpi-card c-gold">
+      <div class="kpi-icon">🔑</div>
+      <div class="kpi-value">25</div>
+      <div class="kpi-label">Aset Pinjaman</div>
+      <div class="kpi-sub">Status E — dipinjam keluar</div>
+      <span class="kpi-pill">0.38%</span>
+    </div>
+
+  </div><!-- /kpi-row -->
+
+  <!-- PROGRESS BAR -->
+  <div class="progress-wrap">
+    <div class="progress-label">🎯 Kadar Pemeriksaan Keseluruhan</div>
+    <div class="progress-bar-outer">
+      <div class="progress-bar-inner"></div>
+    </div>
+    <div class="progress-pct">99.73%</div>
+    <div class="progress-note">6,573 / 6,591 aset telah diperiksa</div>
+  </div>
+
+  <!-- CHARTS SECTION LABEL -->
+  <div class="section-label">Analisis Visual</div>
+
+  <!-- CHARTS ROW -->
+  <div class="charts-row">
+
+    <!-- Bar Chart -->
+    <div class="chart-card">
+      <div class="chart-title">Bilangan Aset Mengikut Kategori Utama</div>
+      <div class="chart-sub">Perbandingan jumlah aset bagi setiap kategori yang direkodkan</div>
+      <div class="chart-canvas-wrap">
+        <canvas id="barChart" height="220"></canvas>
+      </div>
+    </div>
+
+    <!-- Donut Chart -->
+    <div class="chart-card">
+      <div class="chart-title">Taburan Status Aset</div>
+      <div class="chart-sub">Peratusan mengikut kod status A hingga F</div>
+      <div class="chart-canvas-wrap">
+        <canvas id="donutChart" height="220"></canvas>
+      </div>
+      <div class="legend-row">
+        <div class="legend-item"><span class="legend-dot" style="background:#1D8348"></span> A – Sedang Digunakan</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#2563A8"></span> B – Tidak Digunakan</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#C0392B"></span> C – Rosak</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#D35400"></span> D – Diselenggara</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#7D3C98"></span> E – Pinjaman</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#6B7280"></span> F – Hilang</div>
+      </div>
+    </div>
+
+  </div><!-- /charts-row -->
+
+  <!-- BOTTOM ROW: Stacked Bar + Mini Stats -->
+  <div class="bottom-row">
+
+    <!-- Horizontal Bar — Top Sub-kategori -->
+    <div class="chart-card">
+      <div class="chart-title">Top 10 Jenis Aset Terbanyak</div>
+      <div class="chart-sub">Berdasarkan bilangan unit keseluruhan</div>
+      <canvas id="hbarChart" height="280"></canvas>
+    </div>
+
+    <!-- Mini stats breakdown -->
+    <div class="chart-card">
+      <div class="chart-title">Pecahan Status Aset (Unit)</div>
+      <div class="chart-sub">Bilangan tepat bagi setiap kod status pemeriksaan</div>
+      <div class="stat-grid" style="margin-bottom:16px; margin-top:8px;">
+        <div class="stat-mini">
+          <div class="sv" style="color:var(--green)">6,303</div>
+          <div class="sl">🟢 A – Sedang Digunakan</div>
+        </div>
+        <div class="stat-mini">
+          <div class="sv" style="color:var(--blue)">15</div>
+          <div class="sl">🔵 B – Tidak Digunakan</div>
+        </div>
+        <div class="stat-mini">
+          <div class="sv" style="color:var(--red)">19</div>
+          <div class="sl">🔴 C – Rosak</div>
+        </div>
+        <div class="stat-mini">
+          <div class="sv" style="color:var(--orange)">4</div>
+          <div class="sl">🟡 D – Diselenggara</div>
+        </div>
+        <div class="stat-mini">
+          <div class="sv" style="color:var(--purple)">25</div>
+          <div class="sl">🟣 E – Pinjaman</div>
+        </div>
+        <div class="stat-mini">
+          <div class="sv" style="color:var(--grey)">0</div>
+          <div class="sl">⚫ F – Hilang</div>
+        </div>
+      </div>
+      <canvas id="statusBar" height="100"></canvas>
+    </div>
+
+  </div><!-- /bottom-row -->
+
+  <!-- TABLE SECTION LABEL -->
+  <div class="section-label">Jadual Terperinci Mengikut Kategori</div>
+
+  <!-- MAIN TABLE -->
+  <div class="table-card">
+    <div class="table-header">
+      <div class="table-title">Ringkasan Pemeriksaan Mengikut Kategori Aset</div>
+      <div class="table-sub">Data komprehensif bagi semua kategori — termasuk jumlah aset, status pemeriksaan dan pecahan status A–F</div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Bil.</th>
+            <th>Kategori Aset</th>
+            <th class="c">Jumlah<br>Aset</th>
+            <th class="c">Diperiksa</th>
+            <th class="c">Tidak<br>Diperiksa</th>
+            <th class="c">A<br><small>Digunakan</small></th>
+            <th class="c">B<br><small>Tdk Guna</small></th>
+            <th class="c">C<br><small>Rosak</small></th>
+            <th class="c">D<br><small>Selenggara</small></th>
+            <th class="c">E<br><small>Pinjaman</small></th>
+            <th class="c">F<br><small>Hilang</small></th>
+          </tr>
+        </thead>
+        <tbody id="mainTableBody">
+          <!-- Populated by JS -->
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2">JUMLAH KESELURUHAN</td>
+            <td class="c">6,591</td>
+            <td class="c">6,573</td>
+            <td class="c">18</td>
+            <td class="c">6,303</td>
+            <td class="c">15</td>
+            <td class="c">19</td>
+            <td class="c">4</td>
+            <td class="c">25</td>
+            <td class="c">0</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div><!-- /table-card -->
+
+</div><!-- /main -->
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer class="footer">
+  <div class="footer-legend">
+    <span><b>A</b> = Sedang Digunakan</span>
+    <span><b>B</b> = Tidak Digunakan</span>
+    <span><b>C</b> = Rosak</span>
+    <span><b>D</b> = Sedang Diselenggara</span>
+    <span><b>E</b> = Pinjaman</span>
+    <span><b>F</b> = Hilang</span>
+  </div>
+  <div>Kolej Komuniti &nbsp;·&nbsp; Ringkasan Pemeriksaan Harta Modal &amp; Inventori Tahun 2026 &nbsp;·&nbsp; Dijana secara automatik daripada rekod pemeriksaan rasmi</div>
+</footer>
+
+<!-- ══════════════ JAVASCRIPT ══════════════ -->
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────
+// Format: [kategori, jumlah, diperiksa, tidakDiperiksa, A, B, C, D, E, F]
+const tableData = [
+  ["Perabot",                                    3761, 3757,  4, 3676,  6,  7, 5,  0, 0],
+  ["Peralatan & Kelengkapan Bengkel/Kejuruteraan", 247,  247,  0,  202,  3,  3, 3, 36, 6],
+  ["Peralatan & Kelengkapan Pejabat",             297,  297,  0,  286,  2,  9, 0,  0, 0],
+  ["Peralatan & Kelengkapan ICT",                 155,  155,  0,  147,  1,  1, 0, 14, 7],
+  ["Peralatan & Kelengkapan Makmal",               40,   40,  0,   37,  0,  3, 0,  0, 0],
+  ["Kenderaan",                                    11,   11,  0,   11,  0,  0, 0,  0, 0],
+  ["Hiasan / Langsir / Hamparan",                 120,  120,  0,  120,  0,  0, 0,  0, 0],
+  ["Peralatan & Kelengkapan Keselamatan",         322,  322,  0,  320,  0,  2, 0,  0, 0],
+  ["Peralatan & Kelengkapan Dapur",                42,   42,  0,   32,  7,  3, 0,  0, 0],
+  ["Peralatan & Kelengkapan Makmal (Bekalan)",     19,   19,  0,    9,  0, 10, 0,  0, 0],
+  ["Peralatan & Kelengkapan Sukan/Rekreasi",       13,   13,  0,   13,  0,  0, 0,  0, 0],
+  ["Peralatan & Kelengkapan Perubatan",            12,   12,  0,    5,  0,  7, 0,  0, 0],
+  ["Peralatan & Kelengkapan Penyiaran & Muzik",    11,   11,  0,   11,  0,  0, 0,  0, 0],
+  ["Peralatan & Kelengkapan Telekomunikasi",        8,    8,  0,    8,  0,  0, 0,  0, 0],
+  ["Peralatan & Kelengkapan Pertanian/Marin",       3,    3,  0,    3,  0,  0, 0,  0, 0],
+  ["Loji / Jentera",                                3,    3,  0,    3,  0,  0, 0,  0, 0],
+];
+
+// Populate Table
+const tbody = document.getElementById('mainTableBody');
+tableData.forEach((row, i) => {
+  const [kat, jml, dp, tdp, a, b, c, d, e, f] = row;
+  const tr = document.createElement('tr');
+  const pct = ((dp / jml) * 100).toFixed(1);
+  tr.innerHTML = `
+    <td style="color:var(--muted);font-size:11px">${i + 1}</td>
+    <td><span class="cat-badge">${kat}</span></td>
+    <td class="c num-info">${jml.toLocaleString()}</td>
+    <td class="c num-good">${dp.toLocaleString()}</td>
+    <td class="c ${tdp > 0 ? 'num-warn' : ''}">${tdp || '—'}</td>
+    <td class="c num-good">${a || '—'}</td>
+    <td class="c ${b > 0 ? 'num-warn' : ''}">${b || '—'}</td>
+    <td class="c ${c > 0 ? 'num-bad' : ''}">${c || '—'}</td>
+    <td class="c ${d > 0 ? 'num-warn' : ''}">${d || '—'}</td>
+    <td class="c ${e > 0 ? 'num-info' : ''}">${e || '—'}</td>
+    <td class="c">${f || '—'}</td>
+  `;
+  tbody.appendChild(tr);
+});
+
+// ── CHART 1: BAR – Aset mengikut Kategori ────────────────────────────────
+const catLabels = [
+  'Perabot', 'Bengkel/\nKejuruteraan', 'Pejabat', 'ICT', 'Keselamatan',
+  'Makmal', 'Hiasan', 'Dapur', 'Sukan', 'Perubatan', 'Penyiaran', 'Loji'
+];
+const catValues = [3761, 247, 297, 155, 322, 59, 120, 42, 13, 12, 11, 3];
+const catColors = catValues.map((_, i) => {
+  const palette = [
+    '#1A3C6E','#2563A8','#3B82C4','#1D8348','#27AE60',
+    '#C9962B','#D35400','#7D3C98','#C0392B','#6B7280','#2E86C1','#117A65'
+  ];
+  return palette[i % palette.length];
+});
+
+new Chart(document.getElementById('barChart'), {
+  type: 'bar',
+  data: {
+    labels: catLabels,
+    datasets: [{
+      label: 'Jumlah Aset',
+      data: catValues,
+      backgroundColor: catColors,
+      borderRadius: 6,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.parsed.y.toLocaleString()} unit`
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { font: { size: 10 }, color: '#4A5568' }
+      },
+      y: {
+        grid: { color: '#EDF2F7' },
+        ticks: {
+          font: { size: 10 }, color: '#4A5568',
+          callback: v => v >= 1000 ? (v/1000).toFixed(1)+'k' : v
+        }
+      }
+    }
+  }
+});
+
+// ── CHART 2: DONUT – Status Aset ─────────────────────────────────────────
+new Chart(document.getElementById('donutChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['A – Sedang Digunakan', 'B – Tidak Digunakan', 'C – Rosak', 'D – Diselenggara', 'E – Pinjaman'],
+    datasets: [{
+      data: [6303, 15, 19, 4, 25],
+      backgroundColor: ['#1D8348','#2563A8','#C0392B','#D35400','#7D3C98'],
+      borderWidth: 2,
+      borderColor: '#fff',
+      hoverOffset: 8
+    }]
+  },
+  options: {
+    responsive: true,
+    cutout: '60%',
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => {
+            const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+            const pct = ((ctx.parsed / total) * 100).toFixed(2);
+            return ` ${ctx.parsed.toLocaleString()} unit (${pct}%)`;
+          }
+        }
+      }
+    }
+  }
+});
+
+// ── CHART 3: HORIZONTAL BAR – Top 10 Jenis Aset ──────────────────────────
+const hbarLabels = [
+  'Kerusi Banquet (783)', 'Kerusi Kuliah/Latihan (456)',
+  'Meja Pelajar (202)', 'Meja Komputer (325)',
+  'Kerusi Pelajar (238)', 'Kerusi Makmal/Pelukis (93)',
+  'Meja Banquet (109)', 'Bangku/Stool (299)',
+  'Kerusi Kumpulan Sokongan (56)', 'Kerusi Komputer (60)'
+];
+const hbarValues = [783, 456, 325, 299, 238, 202, 109, 93, 60, 56];
+const hbarColors = [
+  '#0D2B55','#1A3C6E','#2563A8','#3B82C4','#1D8348',
+  '#27AE60','#C9962B','#D35400','#7D3C98','#C0392B'
+];
+
+new Chart(document.getElementById('hbarChart'), {
+  type: 'bar',
+  data: {
+    labels: hbarLabels,
+    datasets: [{
+      label: 'Unit',
+      data: hbarValues,
+      backgroundColor: hbarColors,
+      borderRadius: 4,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: { label: ctx => ` ${ctx.parsed.x.toLocaleString()} unit` }
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: '#EDF2F7' },
+        ticks: { font: { size: 10 }, color: '#4A5568' }
+      },
+      y: {
+        grid: { display: false },
+        ticks: { font: { size: 10 }, color: '#4A5568' }
+      }
+    }
+  }
+});
+
+// ── CHART 4: STATUS STACKED BAR ───────────────────────────────────────────
+new Chart(document.getElementById('statusBar'), {
+  type: 'bar',
+  data: {
+    labels: ['Status Keseluruhan Aset'],
+    datasets: [
+      { label: 'A – Sedang Digunakan', data: [6303], backgroundColor: '#1D8348', borderRadius: 0 },
+      { label: 'B – Tidak Digunakan',  data: [15],   backgroundColor: '#2563A8' },
+      { label: 'C – Rosak',            data: [19],   backgroundColor: '#C0392B' },
+      { label: 'D – Diselenggara',     data: [4],    backgroundColor: '#D35400' },
+      { label: 'E – Pinjaman',         data: [25],   backgroundColor: '#7D3C98' },
+    ]
+  },
+  options: {
+    responsive: true,
+    indexAxis: 'y',
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { font: { size: 10 }, boxWidth: 12, padding: 10 }
+      },
+      tooltip: {
+        callbacks: {
+          label: ctx => {
+            const total = 6366;
+            const pct = ((ctx.parsed.x / total) * 100).toFixed(2);
+            return ` ${ctx.dataset.label}: ${ctx.parsed.x.toLocaleString()} (${pct}%)`;
+          }
+        }
+      }
+    },
+    scales: {
+      x: { stacked: true, grid: { color: '#EDF2F7' }, ticks: { font: { size: 10 } } },
+      y: { stacked: true, grid: { display: false }, ticks: { display: false } }
+    }
+  }
+});
+</script>
+
+</body>
+</html>
