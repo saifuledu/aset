@@ -12,6 +12,8 @@
       }
     })();
   </script>
+  <!-- SheetJS — baca fail .xlsx terus dalam browser (ST1) -->
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -346,6 +348,137 @@
       .form-grid, .form-grid.triple, .form-grid.quad { grid-template-columns: 1fr 1fr; }
       .mbox-md { width: 95vw; }
     }
+    /* ── IMPORT EXCEL STYLES (ST2–ST5) ── */
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: 14px;
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: #FAFBFC;
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: var(--blue);
+      background: #EBF3FB;
+    }
+    .drop-zone .dz-icon  { font-size: 44px; margin-bottom: 12px; }
+    .drop-zone .dz-title { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+    .drop-zone .dz-sub   { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+    .drop-zone .dz-meta  { font-size: 10.5px; color: var(--muted); margin-top: 10px; }
+
+    .file-selected {
+      display: none;
+      background: #E9F7EF; border: 1.5px solid #A9DFBF;
+      border-radius: 10px; padding: 14px 18px;
+      margin-top: 14px; align-items: center; gap: 12px;
+    }
+    .file-selected.show { display: flex; }
+    .file-info { flex: 1; }
+    .file-name { font-size: 13px; font-weight: 700; color: var(--green); }
+    .file-size { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* Summary cards */
+    .compare-summary {
+      display: none; margin-top: 20px;
+    }
+    .compare-summary.show { display: block; }
+    .cs-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+      margin-bottom: 18px;
+    }
+    .cs-card {
+      border-radius: 10px; padding: 14px 16px;
+      border: 1.5px solid; text-align: center;
+    }
+    .cs-card.changed  { background: #FEF0E6; border-color: #F0B27A; }
+    .cs-card.unchanged{ background: #EBF5FB; border-color: #AED6F1; }
+    .cs-card.new-cat  { background: #E9F7EF; border-color: #A9DFBF; }
+    .cs-card.missing  { background: #FDEDEB; border-color: #F1948A; }
+    .cs-num  { font-size: 26px; font-weight: 800; line-height: 1; }
+    .cs-card.changed  .cs-num { color: var(--orange); }
+    .cs-card.unchanged .cs-num{ color: var(--blue); }
+    .cs-card.new-cat  .cs-num { color: var(--green); }
+    .cs-card.missing  .cs-num { color: var(--red); }
+    .cs-lbl  { font-size: 10.5px; color: var(--muted); margin-top: 4px; font-weight: 600; }
+
+    /* Detail accordion */
+    .acc-group { border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+    .acc-head {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 16px; cursor: pointer;
+      background: var(--bg); user-select: none;
+      transition: background 0.15s;
+    }
+    .acc-head:hover { background: #DDE4EF; }
+    .acc-icon  { font-size: 14px; }
+    .acc-title { font-size: 13px; font-weight: 700; flex: 1; }
+    .acc-badge {
+      padding: 2px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 700;
+    }
+    .acc-arrow { font-size: 12px; color: var(--muted); transition: transform 0.2s; }
+    .acc-group.open .acc-arrow { transform: rotate(180deg); }
+    .acc-body  { display: none; overflow-x: auto; }
+    .acc-group.open .acc-body { display: block; }
+
+    .diff-tbl { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+    .diff-tbl th { background: var(--navy); color: #fff; padding: 8px 10px; text-align: left; font-size: 10px; font-weight: 600; letter-spacing: 0.4px; white-space: nowrap; }
+    .diff-tbl th.c { text-align: center; }
+    .diff-tbl td { padding: 8px 10px; border-bottom: 1px solid #EDF2F7; vertical-align: middle; }
+    .diff-tbl td.c { text-align: center; }
+    .diff-tbl tr:nth-child(even) { background: #F7FAFD; }
+    .val-old { color: var(--red); text-decoration: line-through; font-size: 10.5px; }
+    .val-new { color: var(--green); font-weight: 700; }
+    .val-arr  { color: var(--muted); font-size: 10px; margin: 0 3px; }
+    .val-same { color: var(--muted); }
+    .tag-new  { display:inline-block; padding:2px 7px; border-radius:4px; font-size:10px; font-weight:700; background:#E9F7EF; color:var(--green); }
+    .tag-gone { display:inline-block; padding:2px 7px; border-radius:4px; font-size:10px; font-weight:700; background:#FDEDEB; color:var(--red); }
+    .tag-upd  { display:inline-block; padding:2px 7px; border-radius:4px; font-size:10px; font-weight:700; background:#FEF0E6; color:var(--orange); }
+
+    /* Mode selector */
+    .mode-selector { margin-top: 20px; }
+    .mode-title { font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 12px; letter-spacing: 0.3px; }
+    .mode-grid  { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+    .mode-card  {
+      border: 2px solid var(--border); border-radius: 10px;
+      padding: 14px; cursor: pointer; transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .mode-card:hover  { border-color: var(--blue-lt); background: #F0F5FF; }
+    .mode-card.active { border-color: var(--blue); background: #EBF2FB; }
+    .mode-card input[type=radio] { position: absolute; opacity: 0; width: 0; }
+    .mode-icon  { font-size: 20px; margin-bottom: 6px; }
+    .mode-name  { font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+    .mode-desc  { font-size: 10.5px; color: var(--muted); line-height: 1.5; }
+    .mode-card.active .mode-name { color: var(--blue); }
+    .mode-warn  { font-size: 11px; color: var(--red); margin-top: 4px; font-weight: 600; }
+
+    .preview-row {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;
+      font-size: 12px;
+    }
+    .preview-row b { color: var(--navy); }
+
+    .warn-banner {
+      display: none; background: #FEF9C3; border: 1.5px solid #F9E07B;
+      border-radius: 9px; padding: 12px 16px; margin-bottom: 14px;
+      font-size: 12px; color: #7D6608;
+    }
+    .warn-banner.show { display: block; }
+
+    .parse-progress {
+      display: none; text-align: center; padding: 24px;
+      color: var(--muted); font-size: 12.5px;
+    }
+    .parse-progress.show { display: block; }
+
+    @media (max-width: 860px) {
+      .cs-grid   { grid-template-columns: repeat(2, 1fr); }
+      .mode-grid { grid-template-columns: 1fr; }
+    }
     @media (max-width: 560px) {
       .form-grid { grid-template-columns: 1fr; }
       .tab-btn span.tab-label { display: none; }
@@ -474,6 +607,10 @@
       <span class="tab-icon">📋</span>
       <span class="tab-label">Urus Data Aset Sedia Ada</span>
       <span class="tab-badge" id="countBadge">0</span>
+    </button>
+    <button class="tab-btn" id="tab-import" onclick="switchTab('import')">
+      <span class="tab-icon">📥</span>
+      <span class="tab-label">Import Excel</span>
     </button>
   </div>
 
@@ -635,15 +772,216 @@
     </div><!-- /panel-card -->
   </div><!-- /panel-urus -->
 
+  <!-- ════════════════════════════════════════ -->
+  <!-- PANEL 3: IMPORT EXCEL (ST2–ST5)         -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="tab-panel" id="panel-import">
+    <div class="panel-card">
+      <div class="panel-head">
+        <span class="panel-head-icon">📥</span>
+        <div class="panel-head-text">
+          <div class="panel-head-title">Import Data dari Fail Excel</div>
+          <div class="panel-head-sub">Upload fail .xlsx — sistem akan parse, bandingkan dengan data sedia ada, dan kemaskini mengikut mod pilihan</div>
+        </div>
+      </div>
+      <div class="panel-body">
+
+        <!-- DROP ZONE -->
+        <div class="drop-zone" id="dropZone"
+          onclick="document.getElementById('fileInput').click()"
+          ondragover="dzDragOver(event)" ondragleave="dzDragLeave(event)" ondrop="dzDrop(event)">
+          <div class="dz-icon">📊</div>
+          <div class="dz-title">Seret &amp; Lepas Fail Excel di Sini</div>
+          <div class="dz-sub">atau klik untuk pilih fail</div>
+          <button class="btn gold" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">
+            📂 Pilih Fail .xlsx
+          </button>
+          <div class="dz-meta">Format: .xlsx sahaja &nbsp;·&nbsp; Saiz maksimum: 10 MB</div>
+        </div>
+        <input type="file" id="fileInput" accept=".xlsx" style="display:none" onchange="handleFileSelect(this.files[0])">
+
+        <!-- FILE SELECTED INFO -->
+        <div class="file-selected" id="fileSelected">
+          <span style="font-size:24px">📊</span>
+          <div class="file-info">
+            <div class="file-name" id="fileName">—</div>
+            <div class="file-size" id="fileSize">—</div>
+          </div>
+          <button class="btn sec sm" onclick="resetImport()">✕ Pilih Fail Lain</button>
+        </div>
+
+        <!-- PARSING PROGRESS -->
+        <div class="parse-progress" id="parseProgress">
+          <div style="font-size:28px;margin-bottom:8px">⏳</div>
+          Sedang membaca dan memproses fail Excel...
+        </div>
+
+        <!-- WARN BANNER (unknown rows) -->
+        <div class="warn-banner" id="warnBanner"></div>
+
+        <!-- COMPARE SUMMARY -->
+        <div class="compare-summary" id="compareSummary">
+          <div class="form-section-title" style="margin-bottom:14px">Keputusan Perbandingan</div>
+
+          <div class="cs-grid">
+            <div class="cs-card changed">
+              <div class="cs-num" id="cs_changed">0</div>
+              <div class="cs-lbl">🟡 Ada Perubahan</div>
+            </div>
+            <div class="cs-card unchanged">
+              <div class="cs-num" id="cs_unchanged">0</div>
+              <div class="cs-lbl">🔵 Tiada Perubahan</div>
+            </div>
+            <div class="cs-card new-cat">
+              <div class="cs-num" id="cs_new">0</div>
+              <div class="cs-lbl">🆕 Kategori Baharu</div>
+            </div>
+            <div class="cs-card missing">
+              <div class="cs-num" id="cs_missing">0</div>
+              <div class="cs-lbl">⚠️ Tiada dalam Excel</div>
+            </div>
+          </div>
+
+          <!-- DETAIL ACCORDION: CHANGED -->
+          <div class="acc-group open" id="acc_changed">
+            <div class="acc-head" onclick="toggleAcc('acc_changed')">
+              <span class="acc-icon">🟡</span>
+              <span class="acc-title">Kategori Ada Perubahan</span>
+              <span class="acc-badge" id="badge_changed" style="background:#FEF0E6;color:var(--orange)">0</span>
+              <span class="acc-arrow">▼</span>
+            </div>
+            <div class="acc-body">
+              <table class="diff-tbl">
+                <thead><tr>
+                  <th>#</th><th>Kategori</th>
+                  <th class="c">Jumlah</th><th class="c">Diperiksa</th><th class="c">Tidak</th>
+                  <th class="c">A</th><th class="c">B</th><th class="c">C</th>
+                  <th class="c">D</th><th class="c">E</th><th class="c">F</th>
+                </tr></thead>
+                <tbody id="tbody_changed"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- DETAIL ACCORDION: NEW -->
+          <div class="acc-group" id="acc_new">
+            <div class="acc-head" onclick="toggleAcc('acc_new')">
+              <span class="acc-icon">🆕</span>
+              <span class="acc-title">Kategori Baharu (dalam Excel, tiada dalam sistem)</span>
+              <span class="acc-badge" id="badge_new" style="background:#E9F7EF;color:var(--green)">0</span>
+              <span class="acc-arrow">▼</span>
+            </div>
+            <div class="acc-body">
+              <table class="diff-tbl">
+                <thead><tr>
+                  <th>#</th><th>Kategori</th>
+                  <th class="c">Jumlah</th><th class="c">Diperiksa</th><th class="c">Tidak</th>
+                  <th class="c">A</th><th class="c">B</th><th class="c">C</th>
+                  <th class="c">D</th><th class="c">E</th><th class="c">F</th>
+                </tr></thead>
+                <tbody id="tbody_new"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- DETAIL ACCORDION: MISSING -->
+          <div class="acc-group" id="acc_missing">
+            <div class="acc-head" onclick="toggleAcc('acc_missing')">
+              <span class="acc-icon">⚠️</span>
+              <span class="acc-title">Kategori Tiada dalam Excel (ada dalam sistem)</span>
+              <span class="acc-badge" id="badge_missing" style="background:#FDEDEB;color:var(--red)">0</span>
+              <span class="acc-arrow">▼</span>
+            </div>
+            <div class="acc-body">
+              <table class="diff-tbl">
+                <thead><tr>
+                  <th>#</th><th>Kategori</th>
+                  <th class="c">Jumlah</th><th class="c">Diperiksa</th><th class="c">Tidak</th>
+                  <th class="c">A</th><th class="c">B</th><th class="c">C</th>
+                  <th class="c">D</th><th class="c">E</th><th class="c">F</th>
+                </tr></thead>
+                <tbody id="tbody_missing"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- DETAIL ACCORDION: UNCHANGED -->
+          <div class="acc-group" id="acc_unchanged">
+            <div class="acc-head" onclick="toggleAcc('acc_unchanged')">
+              <span class="acc-icon">🔵</span>
+              <span class="acc-title">Kategori Tiada Perubahan</span>
+              <span class="acc-badge" id="badge_unchanged" style="background:#EBF5FB;color:var(--blue)">0</span>
+              <span class="acc-arrow">▼</span>
+            </div>
+            <div class="acc-body">
+              <table class="diff-tbl">
+                <thead><tr>
+                  <th>#</th><th>Kategori</th>
+                  <th class="c">Jumlah</th><th class="c">Diperiksa</th><th class="c">Tidak</th>
+                  <th class="c">A</th><th class="c">B</th><th class="c">C</th>
+                  <th class="c">D</th><th class="c">E</th><th class="c">F</th>
+                </tr></thead>
+                <tbody id="tbody_unchanged"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- MODE SELECTOR -->
+          <div class="mode-selector">
+            <div class="form-section-title" style="margin-bottom:14px">Pilih Mod Simpan</div>
+            <div class="mode-grid">
+              <div class="mode-card" id="modeCard_tambah" onclick="selectMode('tambah')">
+                <input type="radio" name="saveMode" value="tambah">
+                <div class="mode-icon">➕</div>
+                <div class="mode-name">Tambah Sahaja</div>
+                <div class="mode-desc">Hanya tambah kategori <b>baharu</b> dari Excel. Semua data lama <b>kekal tidak berubah</b>.</div>
+              </div>
+              <div class="mode-card active" id="modeCard_kemaskini" onclick="selectMode('kemaskini')">
+                <input type="radio" name="saveMode" value="kemaskini" checked>
+                <div class="mode-icon">🔄</div>
+                <div class="mode-name">Kemaskini Perubahan</div>
+                <div class="mode-desc">Kemaskini kategori yang <b>berubah</b> + tambah yang <b>baharu</b>. Kategori lama yang tiada dalam Excel <b>kekal</b>.</div>
+              </div>
+              <div class="mode-card" id="modeCard_ganti" onclick="selectMode('ganti')">
+                <input type="radio" name="saveMode" value="ganti">
+                <div class="mode-icon">🔁</div>
+                <div class="mode-name">Ganti Penuh</div>
+                <div class="mode-desc">Ganti <b>semua</b> data dengan kandungan Excel.</div>
+                <div class="mode-warn">⚠️ Kategori yang tiada dalam Excel akan DIPADAM.</div>
+              </div>
+            </div>
+
+            <div class="preview-row" id="previewRow">
+              <span>Anggaran rekod yang akan terjejas: <b id="previewCount">—</b></span>
+              <span style="font-size:11px;color:var(--muted)" id="previewDesc">Pilih mod untuk lihat impak</span>
+            </div>
+
+            <div class="form-actions" style="padding-top:0;border-top:none">
+              <span class="form-status" id="importStatus"></span>
+              <button class="btn sec" onclick="resetImport()">↺ Import Semula</button>
+              <button class="btn gold" id="importSaveBtn" onclick="executeSave()">
+                ✅ Sahkan &amp; Simpan ke Sistem
+              </button>
+            </div>
+          </div>
+
+        </div><!-- /compare-summary -->
+      </div><!-- /panel-body -->
+    </div><!-- /panel-card -->
+  </div><!-- /panel-import -->
+
 </main>
 
 <script>
 // ═══════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════
-let _rows = [];          // all CSV rows in memory
-let _editIdx = null;     // index of row being edited
-let _delIdx  = null;     // index of row to delete
+let _rows = [];           // all CSV rows in memory
+let _editIdx = null;      // index of row being edited
+let _delIdx  = null;      // index of row to delete
+let _compareResult = null;// result of Excel vs CSV compare
+let _extractedRows = [];  // rows parsed from uploaded Excel
+let _selectedMode  = 'kemaskini'; // default save mode
 
 // ═══════════════════════════════════════════════════════════════
 // STARTUP — fetch data.csv
@@ -1071,6 +1409,418 @@ function pushToGitHub(onSuccess, onFallback) {
       else { r.json().then(e => { toast('GitHub ralat: ' + (e.message || r.status), 'err'); onFallback(); }); }
     })
     .catch(() => { onFallback(); });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ST2 — DROP ZONE HANDLERS
+// ═══════════════════════════════════════════════════════════════
+function dzDragOver(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.add('drag-over');
+}
+function dzDragLeave(e) {
+  document.getElementById('dropZone').classList.remove('drag-over');
+}
+function dzDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFileSelect(file);
+}
+
+function handleFileSelect(file) {
+  if (!file) return;
+  if (!file.name.endsWith('.xlsx')) {
+    toast('❌ Hanya fail .xlsx diterima.', 'err'); return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    toast('❌ Fail terlalu besar (maksimum 10 MB).', 'err'); return;
+  }
+  // Show file info
+  document.getElementById('fileName').textContent = file.name;
+  document.getElementById('fileSize').textContent = (file.size / 1024).toFixed(1) + ' KB';
+  document.getElementById('fileSelected').classList.add('show');
+  document.getElementById('parseProgress').classList.add('show');
+  document.getElementById('compareSummary').classList.remove('show');
+  document.getElementById('warnBanner').classList.remove('show');
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = new Uint8Array(e.target.result);
+      parseExcelFile(data);
+    } catch (err) {
+      document.getElementById('parseProgress').classList.remove('show');
+      toast('❌ Gagal membaca fail: ' + err.message, 'err');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function resetImport() {
+  document.getElementById('fileInput').value = '';
+  document.getElementById('fileSelected').classList.remove('show');
+  document.getElementById('parseProgress').classList.remove('show');
+  document.getElementById('compareSummary').classList.remove('show');
+  document.getElementById('warnBanner').classList.remove('show');
+  document.getElementById('importStatus').textContent = '';
+  _extractedRows = [];
+  _compareResult = null;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ST3 — EXCEL PARSER (auto-detect format A/B)
+// ═══════════════════════════════════════════════════════════════
+function parseExcelFile(data) {
+  const wb = XLSX.read(data, { type: 'array' });
+  let extracted = [];
+  let unknowns  = [];
+
+  if (wb.SheetNames.length === 1) {
+    // FORMAT A — Simple single-sheet
+    extracted = parseFormatA(wb, wb.SheetNames[0]);
+  } else {
+    // FORMAT B — Multi-sheet (pemeriksaan.xlsx style)
+    const result = parseFormatB(wb);
+    extracted = result.rows;
+    unknowns  = result.unknowns;
+  }
+
+  document.getElementById('parseProgress').classList.remove('show');
+
+  if (extracted.length === 0) {
+    toast('❌ Tiada data kategori dapat dikesan dalam fail ini.', 'err');
+    return;
+  }
+
+  // Show unknown rows warning
+  if (unknowns.length > 0) {
+    const wb2 = document.getElementById('warnBanner');
+    wb2.className = 'warn-banner show';
+    wb2.innerHTML = `⚠️ <b>${unknowns.length} nama kategori</b> dalam Excel tidak dapat dipadankan dengan senarai kategori sedia ada dan akan ditambah sebagai <b>kategori baharu</b>:<br>` +
+      unknowns.map(u => `&nbsp;• ${u}`).join('<br>');
+  }
+
+  _extractedRows = extracted;
+  runCompare();
+}
+
+function parseFormatA(wb, sheetName) {
+  // Single sheet — baris = satu kategori, header row 1
+  const ws = wb.Sheets[sheetName];
+  const json = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+  if (json.length < 2) return [];
+
+  // Try to detect header by checking row 0
+  const hdr = json[0].map(v => String(v).trim().toLowerCase());
+  const colMap = {};
+  const wanted = { kategori: ['kategori','nama','category'],
+                   jumlah: ['jumlah','total','keseluruhan'],
+                   diperiksa: ['diperiksa','inspected'],
+                   tidak_diperiksa: ['tidak','tidak_diperiksa','not inspected'],
+                   A:['a'], B:['b'], C:['c'], D:['d'], E:['e'], F:['f'] };
+
+  hdr.forEach((h, i) => {
+    for (const [key, aliases] of Object.entries(wanted)) {
+      if (aliases.some(a => h.includes(a))) colMap[key] = i;
+    }
+  });
+
+  // Fallback: assume standard order  kategori,jumlah,diperiksa,tidak,A,B,C,D,E,F
+  if (colMap.kategori === undefined) colMap.kategori = 0;
+  if (colMap.jumlah    === undefined) colMap.jumlah    = 1;
+  if (colMap.diperiksa === undefined) colMap.diperiksa = 2;
+  if (colMap.tidak_diperiksa === undefined) colMap.tidak_diperiksa = 3;
+  ['A','B','C','D','E','F'].forEach((k, i) => { if (colMap[k] === undefined) colMap[k] = 4 + i; });
+
+  const rows = [];
+  for (let i = 1; i < json.length; i++) {
+    const r = json[i];
+    const kat = String(r[colMap.kategori] || '').trim();
+    if (!kat) continue;
+    const jumlah    = parseInt(r[colMap.jumlah], 10) || 0;
+    const diperiksa = parseInt(r[colMap.diperiksa], 10) || 0;
+    const tidak     = parseInt(r[colMap.tidak_diperiksa], 10) || Math.max(0, jumlah - diperiksa);
+    rows.push({
+      kategori: kat, jumlah, diperiksa, tidakDiperiksa: tidak,
+      A: parseInt(r[colMap.A], 10) || 0,
+      B: parseInt(r[colMap.B], 10) || 0,
+      C: parseInt(r[colMap.C], 10) || 0,
+      D: parseInt(r[colMap.D], 10) || 0,
+      E: parseInt(r[colMap.E], 10) || 0,
+      F: parseInt(r[colMap.F], 10) || 0,
+    });
+  }
+  return rows;
+}
+
+function parseFormatB(wb) {
+  // Multi-sheet — aggregate "Jumlah Mengikut Kategori" per main category
+  // Col index: A=0,B=1,C=2,D=3,E=4,F=5,G=6,H=7,I=8,J=9,K=10
+  const agg = {};      // { normalised_key: { kategori, jumlah, diperiksa, tidak, A,B,C,D,E,F } }
+  const unknowns = []; // names that cannot be matched
+
+  for (const sn of wb.SheetNames) {
+    const ws   = wb.Sheets[sn];
+    const json = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+    let currentCategory = '';
+
+    for (let ri = 0; ri < json.length; ri++) {
+      const row = json[ri];
+      const colA = String(row[0] || '').trim();
+      const colB = String(row[1] || '').trim();
+
+      // Detect main category header: colA has value, colB is empty
+      if (colA && !colB && colA !== 'Kategori' && colA !== 'Sub Kategori' &&
+          !colA.startsWith('A:') && colA.length > 3) {
+        // Check it's a known category keyword
+        const up = colA.toUpperCase();
+        if (up.includes('PERALATAN') || up.includes('KENDERAAN') ||
+            up.includes('HIASAN') || up.includes('PERABOT') ||
+            up.includes('LOJI') || up.includes('PERTANIAN') ||
+            up.includes('PERUBATAN') || up.includes('SUKAN') ||
+            up.includes('PENYIARAN') || up.includes('TELEKOMUNIKASI')) {
+          currentCategory = colA;
+        }
+      }
+
+      // Detect "Jumlah Mengikut Kategori" row
+      if (colB === 'Jumlah Mengikut Kategori' && currentCategory) {
+        const kat  = toTitleCase(currentCategory);
+        const nkey = norm(kat);
+        const c    = parseInt(row[2], 10) || 0;
+        const d    = parseInt(row[3], 10) || 0;
+        const t    = parseInt(row[4], 10) || 0;
+        const A    = parseInt(row[5], 10) || 0;
+        const B    = parseInt(row[6], 10) || 0;
+        const C    = parseInt(row[7], 10) || 0;
+        const D    = parseInt(row[8], 10) || 0;
+        const E    = parseInt(row[9], 10) || 0;
+        const F    = parseInt(row[10], 10) || 0;
+
+        if (!agg[nkey]) {
+          agg[nkey] = { kategori: kat, jumlah:0, diperiksa:0, tidakDiperiksa:0, A:0,B:0,C:0,D:0,E:0,F:0 };
+        }
+        agg[nkey].jumlah         += c;
+        agg[nkey].diperiksa      += d;
+        agg[nkey].tidakDiperiksa += t;
+        agg[nkey].A += A; agg[nkey].B += B; agg[nkey].C += C;
+        agg[nkey].D += D; agg[nkey].E += E; agg[nkey].F += F;
+      }
+    }
+  }
+
+  const rows = Object.values(agg);
+  return { rows, unknowns };
+}
+
+// Normalize for comparison — uppercase, collapse spaces
+function norm(s) { return String(s).trim().toUpperCase().replace(/\s+/g,' ').replace(/[\/]/g,'/'); }
+
+// Convert ALL CAPS to Title Case
+function toTitleCase(s) {
+  const keep = new Set(['DAN','ATAU','DALAM','DENGAN','UNTUK','YANG','THE','OF','AND']);
+  return s.toLowerCase().split(' ').map((w, i) =>
+    (i === 0 || !keep.has(w.toUpperCase()))
+      ? w.charAt(0).toUpperCase() + w.slice(1)
+      : w
+  ).join(' ');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ST4 — COMPARE ENGINE
+// ═══════════════════════════════════════════════════════════════
+function runCompare() {
+  const oldMap = {};
+  _rows.forEach(r => { oldMap[norm(r.kategori)] = r; });
+  const newMap = {};
+  _extractedRows.forEach(r => { newMap[norm(r.kategori)] = r; });
+
+  const matched   = []; // ada dlm kedua-dua, nilai berbeza
+  const unchanged = []; // ada dlm kedua-dua, nilai sama
+  const newOnly   = []; // ada dlm Excel sahaja
+  const oldOnly   = []; // ada dlm data.csv sahaja
+
+  const fields = ['jumlah','diperiksa','tidakDiperiksa','A','B','C','D','E','F'];
+
+  for (const [nkey, nrow] of Object.entries(newMap)) {
+    if (oldMap[nkey]) {
+      const orow = oldMap[nkey];
+      const same = fields.every(f => nrow[f] === orow[f]);
+      if (same) unchanged.push({ old: orow, new: nrow });
+      else      matched.push({ old: orow, new: nrow });
+    } else {
+      newOnly.push(nrow);
+    }
+  }
+  for (const [nkey, orow] of Object.entries(oldMap)) {
+    if (!newMap[nkey]) oldOnly.push(orow);
+  }
+
+  _compareResult = { matched, unchanged, newOnly, oldOnly };
+  renderCompare();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ST5 — RENDER COMPARE UI
+// ═══════════════════════════════════════════════════════════════
+function renderCompare() {
+  const { matched, unchanged, newOnly, oldOnly } = _compareResult;
+
+  // Summary cards
+  document.getElementById('cs_changed').textContent   = matched.length;
+  document.getElementById('cs_unchanged').textContent = unchanged.length;
+  document.getElementById('cs_new').textContent       = newOnly.length;
+  document.getElementById('cs_missing').textContent   = oldOnly.length;
+
+  // Accordion badges
+  document.getElementById('badge_changed').textContent   = matched.length;
+  document.getElementById('badge_new').textContent       = newOnly.length;
+  document.getElementById('badge_missing').textContent   = oldOnly.length;
+  document.getElementById('badge_unchanged').textContent = unchanged.length;
+
+  // Accordion visibility (hide empty)
+  document.getElementById('acc_changed').style.display   = matched.length   ? '' : 'none';
+  document.getElementById('acc_new').style.display       = newOnly.length   ? '' : 'none';
+  document.getElementById('acc_missing').style.display   = oldOnly.length   ? '' : 'none';
+  document.getElementById('acc_unchanged').style.display = unchanged.length ? '' : 'none';
+
+  const fields = ['jumlah','diperiksa','tidakDiperiksa','A','B','C','D','E','F'];
+
+  // Table: changed
+  document.getElementById('tbody_changed').innerHTML = matched.map((item, i) =>
+    `<tr>
+      <td style="color:var(--muted);font-size:10px">${i+1}</td>
+      <td><span class="cat-name" style="font-size:11.5px">${item.new.kategori}</span> <span class="tag-upd">KEMASKINI</span></td>
+      ${fields.map(f => {
+        const o = item.old[f], nv = item.new[f];
+        if (o !== nv) return `<td class="c"><span class="val-old">${o}</span><span class="val-arr">→</span><span class="val-new">${nv}</span></td>`;
+        return `<td class="c val-same">${o}</td>`;
+      }).join('')}
+    </tr>`
+  ).join('');
+
+  // Table: new
+  document.getElementById('tbody_new').innerHTML = newOnly.map((r, i) =>
+    `<tr>
+      <td style="color:var(--muted);font-size:10px">${i+1}</td>
+      <td><span class="cat-name" style="font-size:11.5px">${r.kategori}</span> <span class="tag-new">BAHARU</span></td>
+      ${fields.map(f => `<td class="c val-new">${r[f]}</td>`).join('')}
+    </tr>`
+  ).join('');
+
+  // Table: missing (oldOnly)
+  document.getElementById('tbody_missing').innerHTML = oldOnly.map((r, i) =>
+    `<tr>
+      <td style="color:var(--muted);font-size:10px">${i+1}</td>
+      <td><span class="cat-name" style="font-size:11.5px">${r.kategori}</span> <span class="tag-gone">TIADA DLM EXCEL</span></td>
+      ${fields.map(f => `<td class="c val-same">${r[f]}</td>`).join('')}
+    </tr>`
+  ).join('');
+
+  // Table: unchanged
+  document.getElementById('tbody_unchanged').innerHTML = unchanged.map((item, i) =>
+    `<tr>
+      <td style="color:var(--muted);font-size:10px">${i+1}</td>
+      <td><span class="cat-name" style="font-size:11.5px">${item.new.kategori}</span></td>
+      ${fields.map(f => `<td class="c val-same">${item.new[f]}</td>`).join('')}
+    </tr>`
+  ).join('');
+
+  document.getElementById('compareSummary').classList.add('show');
+  selectMode(_selectedMode); // refresh preview
+}
+
+function toggleAcc(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+// ── MODE SELECTOR ──
+function selectMode(mode) {
+  _selectedMode = mode;
+  ['tambah','kemaskini','ganti'].forEach(m => {
+    document.getElementById('modeCard_' + m).classList.toggle('active', m === mode);
+    const radio = document.querySelector(`input[name=saveMode][value=${m}]`);
+    if (radio) radio.checked = (m === mode);
+  });
+  if (!_compareResult) return;
+  const { matched, newOnly, oldOnly } = _compareResult;
+  let count = 0, desc = '';
+  if (mode === 'tambah') {
+    count = newOnly.length;
+    desc  = `${newOnly.length} rekod baharu akan ditambah. Data lama kekal.`;
+  } else if (mode === 'kemaskini') {
+    count = matched.length + newOnly.length;
+    desc  = `${matched.length} rekod dikemaskini + ${newOnly.length} rekod baharu. Data lama yang tiada dalam Excel kekal.`;
+  } else {
+    count = matched.length + newOnly.length + oldOnly.length;
+    desc  = `Semua ${count} rekod terjejas. Kategori tiada dalam Excel akan dipadam.`;
+  }
+  document.getElementById('previewCount').textContent = count;
+  document.getElementById('previewDesc').textContent  = desc;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ST6 — EXECUTE SAVE
+// ═══════════════════════════════════════════════════════════════
+function executeSave() {
+  if (!_compareResult) return;
+  const mode = _selectedMode;
+
+  // Extra confirmation for Ganti Penuh
+  if (mode === 'ganti') {
+    const { oldOnly } = _compareResult;
+    const msg = oldOnly.length > 0
+      ? `⚠️ GANTI PENUH\n\nTindakan ini akan:\n• Menggantikan SEMUA ${_extractedRows.length} rekod dengan data Excel\n• MEMADAM ${oldOnly.length} kategori yang tiada dalam Excel\n\nAdakah anda pasti?`
+      : `⚠️ GANTI PENUH\n\nSemua data akan digantikan dengan kandungan Excel.\n\nAdakah anda pasti?`;
+    if (!confirm(msg)) return;
+  }
+
+  const { matched, newOnly } = _compareResult;
+  const newMap = {};
+  _extractedRows.forEach(r => { newMap[norm(r.kategori)] = r; });
+
+  if (mode === 'tambah') {
+    // Append new only
+    newOnly.forEach(r => _rows.push(r));
+
+  } else if (mode === 'kemaskini') {
+    // Update matched rows in-place
+    _rows = _rows.map(r => {
+      const upd = newMap[norm(r.kategori)];
+      return upd ? upd : r;
+    });
+    // Append new
+    newOnly.forEach(r => _rows.push(r));
+
+  } else {
+    // Ganti Penuh — replace entirely
+    _rows = [..._extractedRows];
+  }
+
+  const btn = document.getElementById('importSaveBtn');
+  btn.disabled = true;
+  const st = document.getElementById('importStatus');
+  st.className = 'form-status saving';
+  st.textContent = '⏳ Menyimpan ke GitHub...';
+
+  pushToGitHub(() => {
+    st.className = 'form-status ok';
+    st.textContent = '✅ Data berjaya disimpan ke GitHub!';
+    renderTable();
+    updateBadge();
+    btn.disabled = false;
+    toast(`✅ Import berjaya! (${_selectedMode === 'tambah' ? newOnly.length + ' rekod ditambah' : _selectedMode === 'kemaskini' ? (matched.length + newOnly.length) + ' rekod dikemaskini' : _extractedRows.length + ' rekod (ganti penuh)'})`, 'ok');
+    setTimeout(() => resetImport(), 2000);
+  }, () => {
+    st.className = 'form-status ok';
+    st.textContent = '✅ Data dikemaskini (tempatan). Sambungkan GitHub untuk simpan online.';
+    renderTable();
+    updateBadge();
+    btn.disabled = false;
+    toast('Import selesai (tempatan). Sambungkan GitHub untuk simpan online.', 'info');
+    setTimeout(() => resetImport(), 2000);
+  });
 }
 
 // ═══════════════════════════════════════════════════════════════
