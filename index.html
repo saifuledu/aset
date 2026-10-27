@@ -312,7 +312,6 @@
       <div class="mfield">
         <label>Jawapan</label>
         <input type="text" id="r_a" placeholder="Jawapan anda" />
-        <div class="mhint">Jawapan lalai: <b style="color:rgba(255,255,255,0.55)">kolej2026</b></div>
       </div>
       <button class="mbtn pri" onclick="verifyStep()">Seterusnya &rarr;</button>
       <button class="mbtn sec" onclick="closeModal()">Batal</button>
@@ -363,7 +362,8 @@
 <script>
   // ── CREDENTIALS ─────────────────────────────────────────────────────────
   const CRED = { user: 'rohimah', pass: 'admin@2027' };
-  const SEC_ANS = 'kolej2026'; // jawapan keselamatan lalai
+  const SEC_Q   = '3';       // hanya soalan nilai "3" yang diterima
+  const SEC_ANS = 'marang';  // jawapan keselamatan
 
   // redirect if already logged in
   window.addEventListener('load', () => {
@@ -435,8 +435,9 @@
     const err = document.getElementById('e1');
     const show = (msg) => { err.textContent = msg; err.classList.add('show'); };
 
-    if (!u || !q || !a)           return show('Sila lengkapkan semua medan.');
-    if (u !== CRED.user)          return show('Nama pengguna tidak dikenali.');
+    if (!u || !q || !a)              return show('Sila lengkapkan semua medan.');
+    if (u !== CRED.user)             return show('Nama pengguna tidak dikenali.');
+    if (q !== SEC_Q)                 return show('Soalan keselamatan tidak tepat. Sila pilih soalan yang betul.');
     if (a !== SEC_ANS.toLowerCase()) return show('Jawapan keselamatan tidak tepat. Cuba semula.');
     err.classList.remove('show');
     goStep(2);
