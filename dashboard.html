@@ -247,6 +247,115 @@
     .footer-legend span { font-size: 11px; color: var(--muted); }
     .footer-legend b { color: var(--text); }
 
+    /* ── HEADER ACTION BUTTONS ── */
+    .btn-settings {
+      display: flex; align-items: center; gap: 6px; padding: 9px 14px;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 9px; color: rgba(255,255,255,0.8);
+      font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer;
+      transition: background 0.2s; white-space: nowrap; flex-shrink: 0; position: relative;
+    }
+    .btn-settings:hover { background: rgba(255,255,255,0.16); }
+    .btn-manage {
+      display: flex; align-items: center; gap: 6px; padding: 9px 16px;
+      background: var(--gold); border: none; border-radius: 9px; color: #fff;
+      font-size: 12px; font-weight: 700; font-family: inherit; cursor: pointer;
+      transition: opacity 0.2s; white-space: nowrap; flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(201,150,43,0.4);
+    }
+    .btn-manage:hover { opacity: 0.88; }
+    .token-badge {
+      position: absolute; top: -5px; right: -5px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--red); border: 2px solid var(--navy);
+    }
+    .token-badge.ok { background: var(--green); }
+
+    /* ── SHARED MODAL BASE ── */
+    .modal-ov {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+      z-index: 500; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-ov.show { display: flex; }
+    .mbox {
+      background: #fff; border-radius: 16px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+      overflow: hidden; display: flex; flex-direction: column;
+      max-height: 90vh; animation: mFadeUp 0.25s ease both;
+    }
+    @keyframes mFadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .mbox-sm { width: 460px; } .mbox-lg { width: 880px; } .mbox-md { width: 580px; }
+    .mhead { background: var(--navy); color: #fff; padding: 16px 22px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .mhead-icon { font-size: 18px; }
+    .mhead-title { font-size: 14px; font-weight: 700; flex: 1; }
+    .mhead-close { background: none; border: none; color: rgba(255,255,255,0.5); font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1; transition: color 0.2s; border-radius: 4px; }
+    .mhead-close:hover { color: #fff; background: rgba(255,255,255,0.1); }
+    .mbody { padding: 20px 22px; overflow-y: auto; flex: 1; }
+    .mfoot { padding: 14px 22px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; flex-shrink: 0; background: #FAFBFC; }
+    .mfoot-status { flex: 1; font-size: 11.5px; color: var(--muted); }
+    .mfoot-status.saving { color: var(--orange); }
+    .mfoot-status.ok     { color: var(--green); font-weight: 600; }
+    .mfoot-status.err    { color: var(--red); font-weight: 600; }
+
+    /* ── FORM FIELDS ── */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; margin-bottom: 14px; }
+    .form-row.single { grid-template-columns: 1fr; }
+    .form-row.triple { grid-template-columns: repeat(3, 1fr); }
+    .fld label { display: block; font-size: 10.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+    .fld input, .fld select { width: 100%; padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; color: var(--text); outline: none; transition: border-color 0.2s; background: #fff; }
+    .fld input:focus { border-color: var(--blue); background: #F0F5FF; }
+    .fld input[readonly] { background: var(--bg); color: var(--muted); cursor: default; }
+    .fld .hint { font-size: 10.5px; color: var(--muted); margin-top: 3px; }
+    .fld .ferr { font-size: 10.5px; color: var(--red); margin-top: 3px; display: none; }
+    .fld .ferr.show { display: block; }
+    .fld input.invalid { border-color: var(--red) !important; background: #FDF2F2; }
+
+    .sum-ind { display: flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 8px; font-size: 12px; margin-bottom: 14px; border: 1px solid var(--border); }
+    .sum-ind.ok  { background: #E9F7EF; border-color: #A9DFBF; color: var(--green); }
+    .sum-ind.bad { background: #FDEDEB; border-color: #F1948A; color: var(--red); }
+    .sum-ind.neu { background: var(--bg); color: var(--muted); }
+
+    /* ── SETTINGS ── */
+    .set-section { margin-bottom: 18px; }
+    .set-title { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--navy); margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+    .conn-res { padding: 9px 13px; border-radius: 8px; font-size: 12px; margin-top: 10px; display: none; }
+    .conn-res.ok  { background: #E9F7EF; border: 1px solid #A9DFBF; color: var(--green); display: block; }
+    .conn-res.err { background: #FDEDEB; border: 1px solid #F1948A; color: var(--red); display: block; }
+
+    /* ── MANAGER TABLE ── */
+    .mgr-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .mgr-count { font-size: 12px; color: var(--muted); }
+    .mgr-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .mgr-tbl thead tr { background: var(--navy); color: #fff; }
+    .mgr-tbl thead th { padding: 9px 10px; text-align: left; font-size: 10.5px; font-weight: 600; white-space: nowrap; }
+    .mgr-tbl thead th.c { text-align: center; }
+    .mgr-tbl tbody tr:nth-child(even) { background: #F7FAFD; }
+    .mgr-tbl tbody tr:hover { background: #EBF3FB; }
+    .mgr-tbl tbody td { padding: 8px 10px; border-bottom: 1px solid #EDF2F7; vertical-align: middle; }
+    .mgr-tbl tbody td.c { text-align: center; }
+    .mgr-cat { font-size: 11.5px; font-weight: 600; color: var(--navy); }
+    .btn-edit { padding: 4px 10px; background: #EBF2FB; border: 1px solid #BDD3F0; border-radius: 5px; color: var(--blue); font-size: 11px; font-weight: 600; font-family: inherit; cursor: pointer; transition: background 0.15s; }
+    .btn-edit:hover { background: #D0E4F8; }
+    .btn-del  { padding: 4px 10px; background: #FDEDEB; border: 1px solid #F1948A; border-radius: 5px; color: var(--red); font-size: 11px; font-weight: 600; font-family: inherit; cursor: pointer; margin-left: 4px; }
+    .btn-del:hover { background: #FADBD8; }
+
+    /* ── MODAL BUTTONS ── */
+    .mbtn { padding: 9px 18px; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.2s; }
+    .mbtn:hover { opacity: 0.87; }
+    .mbtn.pri  { background: var(--blue); color: #fff; }
+    .mbtn.gold { background: var(--gold); color: #fff; }
+    .mbtn.sec  { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+    .mbtn.danger { background: var(--red); color: #fff; }
+    .mbtn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* ── TOAST ── */
+    .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; color: #fff; box-shadow: 0 6px 20px rgba(0,0,0,0.2); z-index: 9000; transform: translateY(80px); opacity: 0; transition: transform 0.3s, opacity 0.3s; display: flex; align-items: center; gap: 8px; pointer-events: none; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.t-ok  { background: var(--green); }
+    .toast.t-err { background: var(--red); }
+    .toast.t-info{ background: var(--blue); }
+
     @media (max-width: 900px) {
       .kpi-row { grid-template-columns: repeat(3, 1fr); }
       .charts-row { grid-template-columns: 1fr; }
@@ -300,12 +409,229 @@
       <div class="yr">2026</div>
       <div class="lbl">Tahun Pemeriksaan</div>
     </div>
+    <button class="btn-settings" onclick="openSettings()" title="Tetapan GitHub" id="btnSettings">
+      ⚙️ Tetapan
+      <span class="token-badge" id="tokenBadge"></span>
+    </button>
+    <button class="btn-manage" onclick="openManager()">
+      📋 Urus Data
+    </button>
     <button class="btn-logout" onclick="doLogout()" title="Log Keluar">
       🚪 Log Keluar
     </button>
   </div>
   <div class="gold-strip"></div>
 </header>
+
+<!-- ══ TOAST ══ -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL 1: TETAPAN GITHUB (ST1)
+══════════════════════════════════════════════════════ -->
+<div class="modal-ov" id="settingsModal">
+  <div class="mbox mbox-sm">
+    <div class="mhead">
+      <span class="mhead-icon">⚙️</span>
+      <span class="mhead-title">Tetapan GitHub</span>
+      <button class="mhead-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="set-section">
+        <div class="set-title">Maklumat Repositori</div>
+        <div class="form-row single" style="margin-bottom:10px">
+          <div class="fld">
+            <label>GitHub Owner (Username)</label>
+            <input type="text" id="s_owner" placeholder="cth: saifuledu" />
+          </div>
+        </div>
+        <div class="form-row single" style="margin-bottom:10px">
+          <div class="fld">
+            <label>Nama Repositori</label>
+            <input type="text" id="s_repo" placeholder="cth: aset" />
+          </div>
+        </div>
+        <div class="form-row single" style="margin-bottom:10px">
+          <div class="fld">
+            <label>Branch</label>
+            <input type="text" id="s_branch" placeholder="main" />
+            <div class="hint">Biarkan kosong untuk guna <b>main</b></div>
+          </div>
+        </div>
+        <div class="form-row single" style="margin-bottom:0">
+          <div class="fld">
+            <label>Laluan Fail CSV</label>
+            <input type="text" id="s_path" placeholder="data.csv" />
+            <div class="hint">Biarkan kosong untuk guna <b>data.csv</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="set-section">
+        <div class="set-title">Token Keselamatan</div>
+        <div class="form-row single" style="margin-bottom:6px">
+          <div class="fld">
+            <label>Personal Access Token</label>
+            <input type="password" id="s_token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+            <div class="hint">🔒 Token disimpan dalam browser anda sahaja — tidak dalam kod atau repo</div>
+          </div>
+        </div>
+        <div class="conn-res" id="connRes"></div>
+      </div>
+    </div>
+    <div class="mfoot">
+      <div class="mfoot-status" id="settingsStatus"></div>
+      <button class="mbtn sec" onclick="testConnection()">🔗 Uji Sambungan</button>
+      <button class="mbtn pri" onclick="saveSettings()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL 2: URUS DATA — SENARAI REKOD (ST2)
+══════════════════════════════════════════════════════ -->
+<div class="modal-ov" id="managerModal">
+  <div class="mbox mbox-lg">
+    <div class="mhead">
+      <span class="mhead-icon">📋</span>
+      <span class="mhead-title">Urus Data Aset</span>
+      <button class="mhead-close" onclick="closeManager()">✕</button>
+    </div>
+    <div class="mbody">
+      <div id="mgrNoToken" style="display:none; padding:16px; background:#FEF9ED; border:1px solid #F5B942; border-radius:10px; font-size:13px; color:#92610A; margin-bottom:16px;">
+        ⚠️ <b>Token GitHub belum ditetapkan.</b> Sila klik <b>⚙️ Tetapan</b> di header dan masukkan token anda sebelum menguruskan data.
+      </div>
+      <div class="mgr-toolbar">
+        <div class="mgr-count" id="mgrCount">— rekod</div>
+        <button class="mbtn gold" onclick="openAddForm()">＋ Tambah Rekod Baru</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="mgr-tbl">
+          <thead>
+            <tr>
+              <th>Bil.</th>
+              <th>Kategori Aset</th>
+              <th class="c">Jumlah</th>
+              <th class="c">Diperiksa</th>
+              <th class="c">A</th>
+              <th class="c">B</th>
+              <th class="c">C</th>
+              <th class="c">D</th>
+              <th class="c">E</th>
+              <th class="c">F</th>
+              <th class="c">Tindakan</th>
+            </tr>
+          </thead>
+          <tbody id="mgrTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="mfoot">
+      <div class="mfoot-status" id="mgrStatus">Sedia</div>
+      <button class="mbtn sec" onclick="closeManager()">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL 3: BORANG TAMBAH / EDIT (ST3)
+══════════════════════════════════════════════════════ -->
+<div class="modal-ov" id="formModal" style="z-index:600">
+  <div class="mbox mbox-md">
+    <div class="mhead">
+      <span class="mhead-icon" id="formIcon">➕</span>
+      <span class="mhead-title" id="formTitle">Tambah Rekod Baru</span>
+      <button class="mhead-close" onclick="closeForm()">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="form-row single">
+        <div class="fld">
+          <label>Nama Kategori Aset</label>
+          <input type="text" id="f_kat" placeholder="cth: Perabot" oninput="clearFerr('f_kat')" />
+          <div class="ferr" id="ferr_kat"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="fld">
+          <label>Jumlah Aset</label>
+          <input type="number" id="f_jml" placeholder="0" min="0" oninput="onNumChange()" />
+          <div class="ferr" id="ferr_jml"></div>
+        </div>
+        <div class="fld">
+          <label>Diperiksa</label>
+          <input type="number" id="f_dp" placeholder="0" min="0" oninput="onNumChange()" />
+          <div class="ferr" id="ferr_dp"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="fld">
+          <label>Tidak Diperiksa</label>
+          <input type="number" id="f_tdp" readonly />
+          <div class="hint">Dikira automatik (Jumlah − Diperiksa)</div>
+        </div>
+        <div></div>
+      </div>
+      <div style="font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; padding-bottom:5px; border-bottom:1px solid var(--border);">Status Aset (A – F)</div>
+      <div class="form-row triple">
+        <div class="fld">
+          <label>A – Sedang Digunakan</label>
+          <input type="number" id="f_A" placeholder="0" min="0" oninput="onStatusChange()" />
+        </div>
+        <div class="fld">
+          <label>B – Tidak Digunakan</label>
+          <input type="number" id="f_B" placeholder="0" min="0" oninput="onStatusChange()" />
+        </div>
+        <div class="fld">
+          <label>C – Rosak</label>
+          <input type="number" id="f_C" placeholder="0" min="0" oninput="onStatusChange()" />
+        </div>
+      </div>
+      <div class="form-row triple">
+        <div class="fld">
+          <label>D – Diselenggara</label>
+          <input type="number" id="f_D" placeholder="0" min="0" oninput="onStatusChange()" />
+        </div>
+        <div class="fld">
+          <label>E – Pinjaman</label>
+          <input type="number" id="f_E" placeholder="0" min="0" oninput="onStatusChange()" />
+        </div>
+        <div class="fld">
+          <label>F – Hilang</label>
+          <input type="number" id="f_F" placeholder="0" min="0" oninput="onStatusChange()" />
+        </div>
+      </div>
+      <div class="sum-ind neu" id="sumInd">Jumlah A+B+C+D+E+F akan dibandingkan dengan nilai Diperiksa</div>
+      <div class="ferr" id="ferr_sum" style="display:none; font-size:12px; color:var(--red); margin-top:-8px; margin-bottom:10px;"></div>
+    </div>
+    <div class="mfoot">
+      <div class="mfoot-status" id="formStatus"></div>
+      <button class="mbtn sec" onclick="closeForm()">Batal</button>
+      <button class="mbtn pri" onclick="submitForm()" id="btnSubmitForm">💾 Simpan Rekod</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL 4: KONFIRMASI PADAM
+══════════════════════════════════════════════════════ -->
+<div class="modal-ov" id="deleteModal" style="z-index:700">
+  <div class="mbox mbox-sm">
+    <div class="mhead" style="background:var(--red)">
+      <span class="mhead-icon">🗑️</span>
+      <span class="mhead-title">Sahkan Pemadaman</span>
+      <button class="mhead-close" onclick="closeDeleteModal()">✕</button>
+    </div>
+    <div class="mbody" style="text-align:center; padding: 28px 22px;">
+      <div style="font-size:40px; margin-bottom:12px;">⚠️</div>
+      <div style="font-size:14px; font-weight:700; color:var(--text); margin-bottom:8px;">Padam rekod ini?</div>
+      <div style="font-size:13px; color:var(--muted); margin-bottom:6px;" id="delCatName"></div>
+      <div style="font-size:12px; color:var(--red);">Tindakan ini tidak boleh dibatalkan.</div>
+    </div>
+    <div class="mfoot" style="justify-content:center; gap:14px;">
+      <button class="mbtn sec" onclick="closeDeleteModal()">Batal</button>
+      <button class="mbtn danger" onclick="confirmDeleteExec()" id="btnConfirmDel">🗑️ Ya, Padam</button>
+    </div>
+  </div>
+</div>
 
 <!-- ══════════════ MAIN ══════════════ -->
 <div class="main">
@@ -770,6 +1096,356 @@ function doLogout() {
     window.location.replace('index.html');
   }
 }
+
+// ═══════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════
+let _toastTimer = null;
+function showToast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  t.className = `toast t-${type}`;
+  t.textContent = msg;
+  void t.offsetWidth;
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CRUD-ST1 — TETAPAN GITHUB
+// ═══════════════════════════════════════════════════════════════
+const LS = { token:'kk_gh_token', owner:'kk_gh_owner', repo:'kk_gh_repo', branch:'kk_gh_branch', path:'kk_gh_path' };
+
+function getSettings() {
+  return {
+    token:  localStorage.getItem(LS.token)  || '',
+    owner:  localStorage.getItem(LS.owner)  || '',
+    repo:   localStorage.getItem(LS.repo)   || '',
+    branch: localStorage.getItem(LS.branch) || 'main',
+    path:   localStorage.getItem(LS.path)   || 'data.csv',
+  };
+}
+
+function updateTokenBadge() {
+  const { token, owner, repo } = getSettings();
+  const badge = document.getElementById('tokenBadge');
+  if (badge) badge.className = (token && owner && repo) ? 'token-badge ok' : 'token-badge';
+}
+
+function openSettings() {
+  const s = getSettings();
+  document.getElementById('s_owner').value  = s.owner;
+  document.getElementById('s_repo').value   = s.repo;
+  document.getElementById('s_branch').value = s.branch === 'main' ? '' : s.branch;
+  document.getElementById('s_path').value   = s.path === 'data.csv' ? '' : s.path;
+  document.getElementById('s_token').value  = s.token;
+  document.getElementById('connRes').className = 'conn-res';
+  document.getElementById('settingsStatus').textContent = '';
+  document.getElementById('settingsModal').classList.add('show');
+}
+function closeSettings() { document.getElementById('settingsModal').classList.remove('show'); }
+
+function saveSettings() {
+  const owner  = document.getElementById('s_owner').value.trim();
+  const repo   = document.getElementById('s_repo').value.trim();
+  const branch = document.getElementById('s_branch').value.trim() || 'main';
+  const path   = document.getElementById('s_path').value.trim()   || 'data.csv';
+  const token  = document.getElementById('s_token').value.trim();
+  const st     = document.getElementById('settingsStatus');
+
+  if (!owner || !repo || !token) {
+    st.textContent = '⚠️ Sila lengkapkan Owner, Repo dan Token.';
+    st.className = 'mfoot-status err'; return;
+  }
+  localStorage.setItem(LS.owner, owner); localStorage.setItem(LS.repo, repo);
+  localStorage.setItem(LS.branch, branch); localStorage.setItem(LS.path, path);
+  localStorage.setItem(LS.token, token);
+  updateTokenBadge();
+  st.textContent = '✅ Tetapan berjaya disimpan.'; st.className = 'mfoot-status ok';
+  setTimeout(closeSettings, 1200);
+  showToast('✅ Tetapan GitHub disimpan', 'ok');
+}
+
+async function testConnection() {
+  const owner = document.getElementById('s_owner').value.trim() || getSettings().owner;
+  const repo  = document.getElementById('s_repo').value.trim()  || getSettings().repo;
+  const token = document.getElementById('s_token').value.trim() || getSettings().token;
+  const el    = document.getElementById('connRes');
+
+  if (!owner || !repo || !token) {
+    el.className = 'conn-res err'; el.textContent = '⚠️ Sila isi Owner, Repo dan Token dahulu.'; return;
+  }
+  el.style.display = 'block'; el.className = 'conn-res'; el.textContent = '🔄 Menguji sambungan...';
+
+  try {
+    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' }
+    });
+    if (res.ok) {
+      const d = await res.json();
+      el.className = 'conn-res ok';
+      el.textContent = `✅ Berjaya! Repo: "${d.full_name}" (${d.private ? 'Private' : 'Public'})`;
+    } else {
+      const msgs = { 401:'❌ Token tidak sah atau tamat tempoh.', 404:'❌ Repo tidak dijumpai. Semak Owner/Repo.' };
+      el.className = 'conn-res err'; el.textContent = msgs[res.status] || `❌ Ralat HTTP ${res.status}`;
+    }
+  } catch(e) { el.className = 'conn-res err'; el.textContent = '❌ Gagal sambung ke GitHub. Semak internet.'; }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CRUD-ST2 — MODAL URUS DATA
+// ═══════════════════════════════════════════════════════════════
+let _mgrRows = [];
+
+function openManager() {
+  const { token } = getSettings();
+  document.getElementById('mgrNoToken').style.display = token ? 'none' : 'block';
+  _mgrRows = window._dashRows ? [...window._dashRows] : [];
+  renderManagerTable(_mgrRows);
+  setMgrStatus('Sedia', '');
+  document.getElementById('managerModal').classList.add('show');
+}
+function closeManager() { document.getElementById('managerModal').classList.remove('show'); }
+
+function renderManagerTable(rows) {
+  document.getElementById('mgrCount').textContent = `${rows.length} rekod`;
+  const tbody = document.getElementById('mgrTableBody');
+  tbody.innerHTML = '';
+  rows.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="color:var(--muted);font-size:11px">${i+1}</td>
+      <td><span class="mgr-cat">${r.kategori}</span></td>
+      <td class="c"><b>${r.jumlah.toLocaleString()}</b></td>
+      <td class="c" style="color:var(--green);font-weight:700">${r.diperiksa.toLocaleString()}</td>
+      <td class="c">${r.A}</td><td class="c">${r.B}</td>
+      <td class="c" style="${r.C>0?'color:var(--red);font-weight:700':''}">${r.C}</td>
+      <td class="c">${r.D}</td>
+      <td class="c" style="${r.E>0?'color:var(--blue);font-weight:700':''}">${r.E}</td>
+      <td class="c">${r.F}</td>
+      <td class="c">
+        <button class="btn-edit" onclick="openEditForm(${i})">✏️ Edit</button>
+        <button class="btn-del"  onclick="openDeleteModal(${i})">🗑️</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+function setMgrStatus(msg, type) {
+  const el = document.getElementById('mgrStatus');
+  el.textContent = msg; el.className = `mfoot-status ${type}`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CRUD-ST3 — BORANG TAMBAH / EDIT
+// ═══════════════════════════════════════════════════════════════
+let _formMode = 'add', _editIndex = -1;
+const FIDS = ['f_kat','f_jml','f_dp','f_A','f_B','f_C','f_D','f_E','f_F'];
+
+function clearFerr(id) {
+  const key = id.replace('f_','');
+  const err = document.getElementById('ferr_' + key);
+  if (err) { err.textContent=''; err.classList.remove('show'); }
+  const inp = document.getElementById(id);
+  if (inp) inp.classList.remove('invalid');
+}
+
+function clearForm() {
+  FIDS.forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('f_tdp').value = '';
+  document.getElementById('sumInd').className = 'sum-ind neu';
+  document.getElementById('sumInd').textContent = 'Jumlah A+B+C+D+E+F akan dibandingkan dengan nilai Diperiksa';
+  document.getElementById('ferr_sum').style.display = 'none';
+  ['ferr_kat','ferr_jml','ferr_dp'].forEach(id => {
+    const el=document.getElementById(id); if(el){el.textContent='';el.classList.remove('show');}
+  });
+  FIDS.forEach(id => { const el=document.getElementById(id); if(el) el.classList.remove('invalid'); });
+  document.getElementById('formStatus').textContent = '';
+  document.getElementById('formStatus').className = 'mfoot-status';
+}
+
+function openAddForm() {
+  _formMode='add'; _editIndex=-1; clearForm();
+  document.getElementById('formIcon').textContent   = '➕';
+  document.getElementById('formTitle').textContent  = 'Tambah Rekod Baru';
+  document.getElementById('btnSubmitForm').textContent = '💾 Simpan Rekod';
+  document.getElementById('formModal').classList.add('show');
+}
+
+function openEditForm(index) {
+  _formMode='edit'; _editIndex=index; clearForm();
+  const r = _mgrRows[index];
+  document.getElementById('f_kat').value = r.kategori;
+  document.getElementById('f_jml').value = r.jumlah;
+  document.getElementById('f_dp').value  = r.diperiksa;
+  document.getElementById('f_tdp').value = r.tidakDiperiksa;
+  ['A','B','C','D','E','F'].forEach(k => { document.getElementById('f_'+k).value = r[k]; });
+  document.getElementById('formIcon').textContent   = '✏️';
+  document.getElementById('formTitle').textContent  = `Edit: ${r.kategori}`;
+  document.getElementById('btnSubmitForm').textContent = '💾 Kemas Kini Rekod';
+  onStatusChange();
+  document.getElementById('formModal').classList.add('show');
+}
+function closeForm() { document.getElementById('formModal').classList.remove('show'); }
+
+function onNumChange() {
+  const jml = parseInt(document.getElementById('f_jml').value)||0;
+  const dp  = parseInt(document.getElementById('f_dp').value) ||0;
+  document.getElementById('f_tdp').value = Math.max(0, jml-dp);
+  onStatusChange();
+}
+
+function onStatusChange() {
+  const dp  = parseInt(document.getElementById('f_dp').value)||0;
+  const sum = ['f_A','f_B','f_C','f_D','f_E','f_F']
+    .reduce((acc,id)=>acc+(parseInt(document.getElementById(id).value)||0),0);
+  const ind = document.getElementById('sumInd');
+  if (dp===0 && sum===0) {
+    ind.className='sum-ind neu'; ind.textContent='Jumlah A+B+C+D+E+F akan dibandingkan dengan nilai Diperiksa';
+  } else if (sum===dp) {
+    ind.className='sum-ind ok'; ind.textContent=`✓ A+B+C+D+E+F = ${sum} = Diperiksa (${dp}) — Betul`;
+  } else {
+    ind.className='sum-ind bad'; ind.textContent=`✗ A+B+C+D+E+F = ${sum} ≠ Diperiksa (${dp}) — Perlu sama`;
+  }
+}
+
+function validateForm() {
+  let ok = true;
+  const showErr = (fid, eid, msg) => {
+    const inp=document.getElementById(fid); if(inp) inp.classList.add('invalid');
+    const err=document.getElementById(eid); if(err){err.textContent=msg;err.classList.add('show');}
+    ok=false;
+  };
+  const kat = document.getElementById('f_kat').value.trim();
+  const jml = parseInt(document.getElementById('f_jml').value)||0;
+  const dp  = parseInt(document.getElementById('f_dp').value) ||0;
+  const sum = ['f_A','f_B','f_C','f_D','f_E','f_F']
+    .reduce((acc,id)=>acc+(parseInt(document.getElementById(id).value)||0),0);
+
+  if (!kat) { showErr('f_kat','ferr_kat','Nama kategori tidak boleh kosong.'); }
+  else {
+    const dup = _mgrRows.findIndex(r=>r.kategori.toLowerCase()===kat.toLowerCase());
+    if (dup!==-1 && (_formMode==='add' || dup!==_editIndex))
+      showErr('f_kat','ferr_kat','Nama kategori ini sudah wujud.');
+  }
+  if (jml<0) showErr('f_jml','ferr_jml','Jumlah tidak boleh negatif.');
+  if (dp<0)  showErr('f_dp','ferr_dp','Nilai diperiksa tidak boleh negatif.');
+  if (dp>jml) showErr('f_dp','ferr_dp',`Diperiksa (${dp}) tidak boleh melebihi Jumlah (${jml}).`);
+  const se = document.getElementById('ferr_sum');
+  if (sum!==dp) { se.textContent=`A+B+C+D+E+F (${sum}) mesti sama dengan Diperiksa (${dp}).`; se.style.display='block'; ok=false; }
+  else se.style.display='none';
+  return ok;
+}
+
+function getFormRow() {
+  const jml=parseInt(document.getElementById('f_jml').value)||0;
+  const dp =parseInt(document.getElementById('f_dp').value) ||0;
+  return {
+    kategori: document.getElementById('f_kat').value.trim(),
+    jumlah: jml, diperiksa: dp, tidakDiperiksa: Math.max(0,jml-dp),
+    A:parseInt(document.getElementById('f_A').value)||0,
+    B:parseInt(document.getElementById('f_B').value)||0,
+    C:parseInt(document.getElementById('f_C').value)||0,
+    D:parseInt(document.getElementById('f_D').value)||0,
+    E:parseInt(document.getElementById('f_E').value)||0,
+    F:parseInt(document.getElementById('f_F').value)||0,
+  };
+}
+
+async function submitForm() {
+  if (!validateForm()) return;
+  const row = getFormRow();
+  const backup = [..._mgrRows];
+  if (_formMode==='add') _mgrRows.push(row); else _mgrRows[_editIndex]=row;
+
+  const btn=document.getElementById('btnSubmitForm');
+  btn.disabled=true;
+  document.getElementById('formStatus').textContent='⏳ Menyimpan ke GitHub...';
+  document.getElementById('formStatus').className='mfoot-status saving';
+
+  const saved = await saveToGitHub(_mgrRows);
+  btn.disabled=false;
+
+  if (saved) {
+    closeForm(); renderManagerTable(_mgrRows);
+    setMgrStatus(`✅ Rekod berjaya ${_formMode==='add'?'ditambah':'dikemas kini'}.`,'ok');
+    showToast('✅ Data berjaya disimpan ke GitHub','ok');
+    window._dashRows=[..._mgrRows]; initDashboard(_mgrRows);
+  } else {
+    _mgrRows=backup;
+    document.getElementById('formStatus').textContent='❌ Gagal menyimpan. Sila cuba semula.';
+    document.getElementById('formStatus').className='mfoot-status err';
+  }
+}
+
+// ── PADAM ──
+let _deleteIndex = -1;
+function openDeleteModal(index) {
+  _deleteIndex=index;
+  document.getElementById('delCatName').textContent=`"${_mgrRows[index].kategori}"`;
+  document.getElementById('deleteModal').classList.add('show');
+}
+function closeDeleteModal() { document.getElementById('deleteModal').classList.remove('show'); _deleteIndex=-1; }
+
+async function confirmDeleteExec() {
+  if (_deleteIndex<0) return;
+  const btn=document.getElementById('btnConfirmDel');
+  btn.disabled=true; btn.textContent='⏳ Memadamkan...';
+  const backup=[..._mgrRows];
+  _mgrRows.splice(_deleteIndex,1);
+  const saved=await saveToGitHub(_mgrRows);
+  btn.disabled=false; btn.textContent='🗑️ Ya, Padam';
+  if (saved) {
+    closeDeleteModal(); renderManagerTable(_mgrRows);
+    setMgrStatus('✅ Rekod berjaya dipadam.','ok');
+    showToast('✅ Rekod dipadam dan data.csv dikemas kini','ok');
+    window._dashRows=[..._mgrRows]; initDashboard(_mgrRows);
+  } else {
+    _mgrRows=backup; showToast('❌ Gagal padam. Sila cuba semula.','err'); closeDeleteModal();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CRUD-ST4 — GITHUB API SAVE
+// ═══════════════════════════════════════════════════════════════
+function rowsToCSV(rows) {
+  const hdr = 'kategori,jumlah,diperiksa,tidak_diperiksa,A,B,C,D,E,F';
+  return [hdr, ...rows.map(r=>`${r.kategori},${r.jumlah},${r.diperiksa},${r.tidakDiperiksa},${r.A},${r.B},${r.C},${r.D},${r.E},${r.F}`)].join('\n')+'\n';
+}
+function toBase64(str) { return btoa(unescape(encodeURIComponent(str))); }
+
+async function getFileSHA(url, headers) {
+  const res=await fetch(url,{headers});
+  if (res.ok) return (await res.json()).sha;
+  if (res.status===404) return null;
+  throw new Error(`HTTP ${res.status}`);
+}
+
+async function saveToGitHub(rows) {
+  const s=getSettings();
+  if (!s.token||!s.owner||!s.repo) {
+    showToast('❌ Sila tetapkan GitHub Token dalam ⚙️ Tetapan dahulu','err'); return false;
+  }
+  const url=`https://api.github.com/repos/${s.owner}/${s.repo}/contents/${s.path}`;
+  const headers={ Authorization:`Bearer ${s.token}`, Accept:'application/vnd.github+json', 'Content-Type':'application/json' };
+
+  try {
+    const sha    = await getFileSHA(url, headers);
+    const body   = { message:`Kemas kini ${s.path} — ${new Date().toLocaleString('ms-MY')}`, content:toBase64(rowsToCSV(rows)), branch:s.branch };
+    if (sha) body.sha=sha;
+    const res=await fetch(url,{method:'PUT',headers,body:JSON.stringify(body)});
+    if (res.ok) return true;
+    const ed=await res.json().catch(()=>({}));
+    const em={401:'Token tidak sah.',403:'Akses ditolak. Semak scope token (perlu: repo).',404:'Repo/fail tidak dijumpai.',409:'Konflik SHA. Muat semula halaman dan cuba semula.',422:'Data tidak sah.'}[res.status]||`Ralat HTTP ${res.status}: ${ed.message||''}`;
+    showToast(`❌ ${em}`,'err'); return false;
+  } catch(e) { showToast(`❌ Ralat rangkaian: ${e.message}`,'err'); return false; }
+}
+
+// ── Patch initDashboard — simpan rows dalam memori global ──
+const _origInit = initDashboard;
+function initDashboard(rows) { window._dashRows=[...rows]; _origInit(rows); }
+
+// Init badge on load
+document.addEventListener('DOMContentLoaded', updateTokenBadge);
 
 </script>
 </body>
