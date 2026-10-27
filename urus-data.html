@@ -1557,8 +1557,23 @@ function parseFormatA(wb, sheetName) {
 function parseFormatB(wb) {
   // Multi-sheet — aggregate "Jumlah Mengikut Kategori" per main category
   // Col index: A=0,B=1,C=2,D=3,E=4,F=5,G=6,H=7,I=8,J=9,K=10
-  const agg = {};      // { normalised_key: { kategori, jumlah, diperiksa, tidak, A,B,C,D,E,F } }
-  const unknowns = []; // names that cannot be matched
+  //
+  // FIX: Kategori header detection diperluas — tidak bergantung pada senarai
+  // keyword tetap. Sebaliknya kesan mana-mana baris di mana:
+  //   colA ada nilai + colB kosong + colC kosong/tiada + bukan baris skip
+  // Ini membolehkan semua blok dari semua 23 halaman dikesan dengan betul.
+
+  const agg = {};      // { norm_key: row_object }
+  const unknowns = [];
+
+  // Baris-baris yang diabaikan (header jadual, footer legend)
+  const SKIP_EXACT = new Set([
+    'KATEGORI', 'SUB KATEGORI', 'JENIS',
+    'KOLEJ KOMUNITI',
+    'RINGKASAN PEMERIKSAAN HARTA MODAL & INVENTORI BAGI TAHUN 2026'
+  ]);
+  // Prefix yang diabaikan (footer A:Sedang Digunakan,...)
+  const SKIP_PREFIX = ['A:SEDANG', 'A:SEDANG DIGUNAKAN'];
 
   for (const sn of wb.SheetNames) {
     const ws   = wb.Sheets[sn];
@@ -1566,20 +1581,20 @@ function parseFormatB(wb) {
     let currentCategory = '';
 
     for (let ri = 0; ri < json.length; ri++) {
-      const row = json[ri];
+      const row  = json[ri];
       const colA = String(row[0] || '').trim();
       const colB = String(row[1] || '').trim();
+      // colC: treat as empty if blank string, 0, or undefined
+      const colC = row[2];
+      const colCEmpty = (colC === '' || colC === undefined || colC === null);
 
-      // Detect main category header: colA has value, colB is empty
-      if (colA && !colB && colA !== 'Kategori' && colA !== 'Sub Kategori' &&
-          !colA.startsWith('A:') && colA.length > 3) {
-        // Check it's a known category keyword
-        const up = colA.toUpperCase();
-        if (up.includes('PERALATAN') || up.includes('KENDERAAN') ||
-            up.includes('HIASAN') || up.includes('PERABOT') ||
-            up.includes('LOJI') || up.includes('PERTANIAN') ||
-            up.includes('PERUBATAN') || up.includes('SUKAN') ||
-            up.includes('PENYIARAN') || up.includes('TELEKOMUNIKASI')) {
+      // Detect kategori utama header:
+      //   colA ada nilai, colB kosong, colC kosong, bukan baris skip
+      if (colA && !colB && colCEmpty && colA.length > 3) {
+        const upA = colA.toUpperCase();
+        const isSkip = SKIP_EXACT.has(upA) ||
+                       SKIP_PREFIX.some(p => upA.startsWith(p));
+        if (!isSkip) {
           currentCategory = colA;
         }
       }
@@ -1588,18 +1603,19 @@ function parseFormatB(wb) {
       if (colB === 'Jumlah Mengikut Kategori' && currentCategory) {
         const kat  = toTitleCase(currentCategory);
         const nkey = norm(kat);
-        const c    = parseInt(row[2], 10) || 0;
-        const d    = parseInt(row[3], 10) || 0;
-        const t    = parseInt(row[4], 10) || 0;
-        const A    = parseInt(row[5], 10) || 0;
-        const B    = parseInt(row[6], 10) || 0;
-        const C    = parseInt(row[7], 10) || 0;
-        const D    = parseInt(row[8], 10) || 0;
-        const E    = parseInt(row[9], 10) || 0;
-        const F    = parseInt(row[10], 10) || 0;
+        const c = parseInt(row[2], 10) || 0;
+        const d = parseInt(row[3], 10) || 0;
+        const t = parseInt(row[4], 10) || 0;
+        const A = parseInt(row[5], 10) || 0;
+        const B = parseInt(row[6], 10) || 0;
+        const C = parseInt(row[7], 10) || 0;
+        const D = parseInt(row[8], 10) || 0;
+        const E = parseInt(row[9], 10) || 0;
+        const F = parseInt(row[10], 10) || 0;
 
         if (!agg[nkey]) {
-          agg[nkey] = { kategori: kat, jumlah:0, diperiksa:0, tidakDiperiksa:0, A:0,B:0,C:0,D:0,E:0,F:0 };
+          agg[nkey] = { kategori: kat, jumlah:0, diperiksa:0, tidakDiperiksa:0,
+                        A:0, B:0, C:0, D:0, E:0, F:0 };
         }
         agg[nkey].jumlah         += c;
         agg[nkey].diperiksa      += d;
@@ -1614,17 +1630,28 @@ function parseFormatB(wb) {
   return { rows, unknowns };
 }
 
-// Normalize for comparison — uppercase, collapse spaces
-function norm(s) { return String(s).trim().toUpperCase().replace(/\s+/g,' ').replace(/[\/]/g,'/'); }
+// FIX: Normalize — uppercase, normalise spacing sekeliling '/' secara konsisten
+// Contoh: "PERTANIAN / PERHUTANAN/MARIN" → "PERTANIAN / PERHUTANAN / MARIN"
+function norm(s) {
+  return String(s).trim()
+    .toUpperCase()
+    .replace(/\s*\/\s*/g, ' / ')  // space sekeliling setiap slash
+    .replace(/\s+/g, ' ')          // collapse multiple spaces
+    .trim();
+}
 
-// Convert ALL CAPS to Title Case
+// FIX: Title Case — normalize slash spacing dulu sebelum split
+// Contoh: "PERALATAN/KEJURUTERAAN" → "Peralatan / Kejuruteraan"
 function toTitleCase(s) {
-  const keep = new Set(['DAN','ATAU','DALAM','DENGAN','UNTUK','YANG','THE','OF','AND']);
-  return s.toLowerCase().split(' ').map((w, i) =>
-    (i === 0 || !keep.has(w.toUpperCase()))
+  // Normalize slash spacing: "X/Y" atau "X / Y" → "X / Y"
+  const clean = String(s).replace(/\s*\/\s*/g, ' / ');
+  const keep  = new Set(['DAN','ATAU','DALAM','DENGAN','UNTUK','YANG','THE','OF','AND']);
+  return clean.toLowerCase().split(' ').map((w, i) => {
+    if (w === '/') return '/';
+    return (i === 0 || !keep.has(w.toUpperCase()))
       ? w.charAt(0).toUpperCase() + w.slice(1)
-      : w
-  ).join(' ');
+      : w;
+  }).join(' ');
 }
 
 // ═══════════════════════════════════════════════════════════════
