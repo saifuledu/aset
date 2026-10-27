@@ -1,17 +1,16 @@
 kategori,jumlah,diperiksa,tidak_diperiksa,A,B,C,D,E,F
-Perabot,3761,3757,4,3676,6,7,5,0,0
-Peralatan & Kelengkapan Bengkel/Kejuruteraan,247,247,0,202,3,3,3,36,6
-Peralatan & Kelengkapan Pejabat,297,297,0,286,2,9,0,0,0
-Peralatan & Kelengkapan ICT,155,155,0,147,1,1,0,14,7
-Peralatan & Kelengkapan Makmal,40,40,0,37,0,3,0,0,0
-Kenderaan,11,11,0,11,0,0,0,0,0
+Peralatan Dan Kelengkapan Bengkel / Kejuruteraan,864,864,0,751,79,13,21,0,0
+Peralatan Dan Kelengkapan Pejabat,826,824,2,800,22,2,0,0,0
+Perabot,4019,4012,7,3930,7,75,0,0,0
+Peralatan Dan Kelengkapan Keselamatan,329,329,0,327,2,0,0,0,0
 Hiasan / Langsir / Hamparan,120,120,0,120,0,0,0,0,0
-Peralatan & Kelengkapan Keselamatan,322,322,0,320,0,2,0,0,0
-Peralatan & Kelengkapan Dapur,42,42,0,32,7,3,0,0,0
-Peralatan & Kelengkapan Makmal (Bekalan),19,19,0,9,0,10,0,0,0
-Peralatan & Kelengkapan Sukan/Rekreasi,13,13,0,13,0,0,0,0,0
-Peralatan & Kelengkapan Perubatan,12,12,0,5,0,7,0,0,0
-Peralatan & Kelengkapan Penyiaran & Muzik,11,11,0,11,0,0,0,0,0
-Peralatan & Kelengkapan Telekomunikasi,8,8,0,8,0,0,0,0,0
-Peralatan & Kelengkapan Pertanian/Marin,3,3,0,3,0,0,0,0,0
+Peralatan Dan Kelengkapan ICT,184,180,4,173,7,0,0,0,0
+Peralatan Dan Kelengkapan Makmal,103,98,5,76,18,0,4,0,0
+Peralatan Dan Kelengkapan Dapur,69,69,0,57,9,3,0,0,0
+Kenderaan,24,24,0,23,0,1,0,0,0
+Peralatan Dan Kelengkapan Sukan / Rekreasi,13,13,0,13,0,0,0,0,0
+Peralatan Dan Kelengkapan Perubatan,13,13,0,6,7,0,0,0,0
+Peralatan Dan Kelengkapan Penyiaran & Muzik,13,13,0,13,0,0,0,0,0
+Peralatan Dan Kelengkapan Telekomunikasi,8,8,0,8,0,0,0,0,0
+Peralatan Dan Kelengkapan Pertanian / Perhutanan / Marin,3,3,0,3,0,0,0,0,0
 Loji / Jentera,3,3,0,3,0,0,0,0,0
