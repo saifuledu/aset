@@ -836,6 +836,7 @@ window.addEventListener('load', () => {
 // INIT — panggil semua render selepas data berjaya dimuatkan
 // ═══════════════════════════════════════════════════════════════
 function initDashboard(rows) {
+  window._dashRows = [...rows]; // simpan dalam memori global untuk CRUD
   renderKPI(rows);
   renderTable(rows);
   renderBarChart(rows);
@@ -1439,10 +1440,6 @@ async function saveToGitHub(rows) {
     showToast(`❌ ${em}`,'err'); return false;
   } catch(e) { showToast(`❌ Ralat rangkaian: ${e.message}`,'err'); return false; }
 }
-
-// ── Patch initDashboard — simpan rows dalam memori global ──
-const _origInit = initDashboard;
-function initDashboard(rows) { window._dashRows=[...rows]; _origInit(rows); }
 
 // Init badge on load
 document.addEventListener('DOMContentLoaded', updateTokenBadge);
